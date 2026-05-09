@@ -13,7 +13,38 @@
     {%- endif -%}
   </div>
 
-  {%- unless section.settings.media_only -%}
+  {%- if section.settings.media_only -%}
+  <div class="hero__overlay hero__overlay--intro">
+    <div class="hero__intro-header">
+      <a class="hero__intro-scroll" href="#after-hero">
+        <span class="hero__intro-icon hero__intro-icon--scroll" aria-hidden="true"></span>
+        SCROLL <br class="hero__intro-break">TO EXPLORE
+      </a>
+      <div class="hero__intro-meta">
+        <span class="hero__intro-center">
+          <span class="hero__intro-icon hero__intro-icon--elevate" aria-hidden="true"></span>
+          Elevate<br class="hero__intro-break">every descent
+        </span>
+        <span class="hero__intro-right">
+          Designed <br class="hero__intro-break">IN USA
+          <span class="hero__intro-icon hero__intro-icon--globe" aria-hidden="true"></span>
+        </span>
+      </div>
+    </div>
+
+    <div class="hero__title-row">
+      <h1 class="hero__title">
+        Materials science meets mother nature.<span class="accent-dot" aria-hidden="true"></span>
+      </h1>
+      <div class="hero__cta-block">
+        <a href="{{ routes.all_products_collection_url }}" class="hero__cta">
+          <span>DISCOVER</span>
+          <span style="display:inline-flex;align-items:center;gap:10px;">OUR PRODUCTS <span class="hero__cta-arrow">{% render 'icons', icon: 'arrow-down' %}</span></span>
+        </a>
+      </div>
+    </div>
+  </div>
+  {%- else -%}
   <div class="hero__overlay">
     <div class="hero__chip-row">
       <a class="hero__scroll" href="#after-hero">{% render 'icons', icon: 'arrow-down' %} {{ section.settings.scroll_label }}</a>
@@ -35,7 +66,7 @@
       {%- endif -%}
     </div>
   </div>
-  {%- endunless -%}
+  {%- endif -%}
 </section>
 <div id="after-hero"></div>
 

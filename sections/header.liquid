@@ -1,6 +1,7 @@
 <header class="site-header" data-section-id="{{ section.id }}">
   <a class="site-header__brand site-header__brand--logo" href="/" aria-label="{{ settings.brand_wordmark | default: shop.name }}">
     <img src="{{ 'gymbrat-logo.svg' | asset_url }}" alt="{{ settings.brand_wordmark | default: shop.name }}">
+    <span class="site-header__mobile-wordmark">{{ settings.brand_wordmark | default: shop.name }}</span>
   </a>
 
   <nav class="site-header__center" aria-label="Primary">
@@ -19,10 +20,25 @@
 
   <div class="site-header__corner" role="group" aria-label="Cart and shop">
     <button class="corner-cta corner-cta--cart" data-drawer-toggle="CartDrawer" aria-controls="CartDrawer">
-      Cart <span class="corner-cta__count" data-cart-count>{{ cart.item_count | prepend: '0' | slice: -2, 2 }}</span>
+      <span class="corner-cta__label">Cart</span>
+      <span class="corner-cta__mobile-icon" aria-hidden="true">{% render 'icons', icon: 'bag' %}</span>
+      <span class="corner-cta__count" data-cart-count>{{ cart.item_count | prepend: '0' | slice: -2, 2 }}</span>
     </button>
     <a class="corner-cta corner-cta--shop" href="/collections/all">
-      Shop <span class="corner-cta__icon">{% render 'icons', icon: 'grid' %}</span>
+      Shop
+      <span class="corner-cta__icon" aria-hidden="true">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="2" height="2" fill="#0D0B14"/>
+          <rect y="4" width="2" height="2" fill="#0D0B14"/>
+          <rect y="8" width="2" height="2" fill="#0D0B14"/>
+          <rect x="4" width="2" height="2" fill="#0D0B14"/>
+          <rect x="4" y="4" width="2" height="2" fill="#0D0B14"/>
+          <rect x="4" y="8" width="2" height="2" fill="#0D0B14"/>
+          <rect x="8" width="2" height="2" fill="#0D0B14"/>
+          <rect x="8" y="4" width="2" height="2" fill="#0D0B14"/>
+          <rect x="8" y="8" width="2" height="2" fill="#0D0B14"/>
+        </svg>
+      </span>
     </a>
   </div>
 </header>
@@ -54,39 +70,75 @@
 </div>
 
 {%- comment -%} Cart drawer {%- endcomment -%}
-<div class="drawer" id="CartDrawer" aria-hidden="true">
+<div class="drawer cart-drawer" id="CartDrawer" aria-hidden="true">
   <div class="drawer__scrim" data-drawer-close></div>
-  <div class="drawer__panel">
-    <div class="drawer__head">
-      <span class="smallcaps">Bag — <span data-cart-count>{{ cart.item_count }}</span></span>
-      <button data-drawer-close aria-label="Close">{% render 'icons', icon: 'close' %}</button>
+  <div class="drawer__panel cart-drawer__panel">
+    <div class="cart-drawer__header">
+      <div class="cart-drawer__count">
+        <span data-cart-count>{{ cart.item_count | prepend: '0' | slice: -2, 2 }}</span>
+        ITEMS IN YOUR CART
+      </div>
+      <button class="cart-drawer__close" data-drawer-close aria-label="Close">
+        CLOSE
+        <span class="cart-drawer__close-icon" aria-hidden="true"></span>
+      </button>
     </div>
-    <div class="drawer__body">
+
+    <div class="cart-drawer__body">
       {%- if cart.item_count > 0 -%}
-        <ul class="cart-list">
+        <ul class="cart-drawer__list">
           {%- for item in cart.items -%}
-            <li class="cart-item">
-              <a href="{{ item.url }}">{%- if item.image -%}<img src="{{ item.image | image_url: width: 200 }}" alt="" loading="lazy">{%- endif -%}</a>
-              <div>
-                <a href="{{ item.url }}" class="cart-item__title">{{ item.product.title }}</a>
-                {%- if item.variant.title != 'Default Title' -%}<div class="cart-item__sub">{{ item.variant.title }}</div>{%- endif -%}
-                <div class="cart-item__row">
-                  <span>{{ item.quantity }} × {{ item.original_price | money }}</span>
-                  <a class="cart-item__remove" href="{{ item.url_to_remove }}">Remove</a>
-                </div>
+            <li class="cart-drawer__item">
+              <a class="cart-drawer__item-media" href="{{ item.url }}">
+                {%- if item.image -%}<img src="{{ item.image | image_url: width: 320 }}" alt="" loading="lazy">{%- endif -%}
+              </a>
+              <div class="cart-drawer__item-info">
+                <a class="cart-drawer__item-title" href="{{ item.url }}">{{ item.product.title }}</a>
+                <div class="cart-drawer__item-price">{{ item.original_price | money }}</div>
+                {%- if item.options_with_values.size > 0 and item.variant.title != 'Default Title' -%}
+                  <dl class="cart-drawer__item-options">
+                    {%- for option in item.options_with_values -%}
+                      <div class="cart-drawer__item-option">
+                        <dt>{{ option.name }}:</dt>
+                        <dd>{{ option.value }}</dd>
+                      </div>
+                    {%- endfor -%}
+                  </dl>
+                {%- endif -%}
               </div>
+              <a class="cart-drawer__item-remove" href="{{ item.url_to_remove }}" aria-label="Remove {{ item.product.title }}">
+                <span class="cart-drawer__item-remove-icon" aria-hidden="true"></span>
+              </a>
             </li>
           {%- endfor -%}
         </ul>
       {%- else -%}
-        <p style="font-size:18px;color:var(--c-mute);margin-top:24px;">{{ 'general.cart.empty' | t }}</p>
+        <div class="cart-drawer__empty">
+          <h3 class="cart-drawer__empty-title">Your cart is empty</h3>
+          <a href="/collections/all" class="cart-drawer__cta cart-drawer__cta--white">
+            <span>CONTINUE SHOPPING</span>
+            <span class="cart-drawer__cta-arrow" aria-hidden="true"></span>
+          </a>
+        </div>
       {%- endif -%}
     </div>
+
     {%- if cart.item_count > 0 -%}
-      <div class="drawer__foot">
-        <div class="cart-foot">
-          <div class="cart-foot__row"><span>{{ 'general.cart.subtotal' | t }}</span><strong>{{ cart.total_price | money_with_currency }}</strong></div>
-          <a href="/checkout" class="btn btn--accent btn--full btn--sq">{{ 'general.cart.checkout' | t }} →</a>
+      <div class="cart-drawer__footer">
+        <div class="cart-drawer__totals">
+          <span class="cart-drawer__totals-label">Total</span>
+          <span class="cart-drawer__totals-value">{{ cart.total_price | money }}</span>
+        </div>
+        <p class="cart-drawer__tax-note">Taxes, discounts and <a href="/policies/shipping-policy">shipping</a> calculated at checkout.</p>
+        <div class="cart-drawer__ctas">
+          <a class="cart-drawer__cta cart-drawer__cta--white" href="/cart">
+            <span>VIEW CART</span>
+            <span class="cart-drawer__cta-arrow" aria-hidden="true"></span>
+          </a>
+          <a class="cart-drawer__cta cart-drawer__cta--accent" href="/checkout">
+            <span>CHECK OUT</span>
+            <span class="cart-drawer__cta-arrow" aria-hidden="true"></span>
+          </a>
         </div>
       </div>
     {%- endif -%}

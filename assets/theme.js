@@ -97,6 +97,240 @@
     });
   }
 
+  /* FAQ hover reveal */
+  document.querySelectorAll('.faq__item').forEach((item) => {
+    item.addEventListener('mouseenter', () => { item.open = true; });
+    item.addEventListener('mouseleave', () => { item.open = false; });
+    item.addEventListener('focusin', () => { item.open = true; });
+    item.addEventListener('focusout', () => {
+      requestAnimationFrame(() => {
+        if (!item.contains(document.activeElement)) item.open = false;
+      });
+    });
+  });
+
+  /* Showcase variant popup */
+  const showcasePopup = document.querySelector('[data-showcase-variant-popup]');
+  let activeShowcaseForm = null;
+  let activeShowcaseVariants = [];
+  let activeShowcaseSelection = {};
+  let activeShowcaseOptionNames = [];
+
+  const money = (cents) => {
+    const value = Number(cents || 0) / 100;
+    return '$' + (Number.isInteger(value) ? value.toFixed(0) : value.toFixed(2));
+  };
+
+  const unique = (items) => Array.from(new Set(items.filter(Boolean)));
+  const showcaseOptionKey = (index) => 'option' + (index + 1);
+  const showcaseOptionLabel = (index) => {
+    const option = activeShowcaseOptionNames[index];
+    if (typeof option === 'string') return option;
+    if (option?.name) return option.name;
+    return index === 0 ? 'Color' : index === 1 ? 'Size' : 'Option';
+  };
+  const showcaseOptionKeys = () => ['option1', 'option2', 'option3'].filter((key) => {
+    return unique(activeShowcaseVariants.map((variant) => variant[key])).length;
+  });
+
+  const closeShowcasePopup = () => {
+    if (!showcasePopup) return;
+    showcasePopup.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  };
+
+  const updateShowcasePopupVariant = () => {
+    if (!showcasePopup || !activeShowcaseForm) return;
+    const requiredKeys = showcaseOptionKeys();
+    const isComplete = requiredKeys.every((key) => Boolean(activeShowcaseSelection[key]));
+    const selected = isComplete ? activeShowcaseVariants.find((variant) => {
+      return requiredKeys.every((key) => {
+        return String(variant[key] || '') === String(activeShowcaseSelection[key] || '');
+      });
+    }) : null;
+    const add = showcasePopup.querySelector('[data-popup-add]');
+    const price = showcasePopup.querySelector('[data-popup-price]');
+    const color = showcasePopup.querySelector('[data-popup-color]');
+    const size = showcasePopup.querySelector('[data-popup-size]');
+    const image = showcasePopup.querySelector('[data-popup-image]');
+
+    if (color) color.textContent = activeShowcaseSelection.option1 || '--';
+    if (size) size.textContent = activeShowcaseSelection.option2 || '--';
+    if (selected && price) price.textContent = money(selected.price);
+    if (selected?.featured_image?.src && image) image.src = selected.featured_image.src;
+    if (add) {
+      add.disabled = !isComplete;
+      add.dataset.variantId = selected && selected.id ? selected.id : '';
+    }
+  };
+
+  const setShowcaseValue = (key, value) => {
+    activeShowcaseSelection[key] = value;
+    const allKeys = showcaseOptionKeys();
+    const idx = allKeys.indexOf(key);
+    allKeys.slice(idx + 1).forEach((nextKey) => {
+      if (!activeShowcaseSelection[nextKey]) return;
+      const stillValid = activeShowcaseVariants.some((variant) => {
+        return allKeys.slice(0, idx + 1).every((currentKey) => {
+          return String(variant[currentKey] || '') === String(activeShowcaseSelection[currentKey] || '');
+        }) && String(variant[nextKey] || '') === String(activeShowcaseSelection[nextKey] || '');
+      });
+      if (!stillValid) activeShowcaseSelection[nextKey] = '';
+    });
+  };
+
+  const renderShowcaseSelectors = () => {
+    if (!showcasePopup) return;
+    const wrap = showcasePopup.querySelector('[data-popup-selectors]');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    showcaseOptionKeys().forEach((key) => {
+      const values = unique(activeShowcaseVariants.map((variant) => variant[key]));
+      if (!values.length) return;
+      const optionName = showcaseOptionLabel(showcaseOptionKeys().indexOf(key));
+
+      const field = document.createElement('div');
+      field.className = 'showcase-variant-popup__field';
+      field.dataset.optionKey = key;
+
+      const trigger = document.createElement('button');
+      trigger.type = 'button';
+      trigger.className = 'showcase-variant-popup__trigger';
+      trigger.setAttribute('aria-haspopup', 'listbox');
+      trigger.setAttribute('aria-expanded', 'false');
+
+      const triggerLabel = document.createElement('span');
+      triggerLabel.className = 'showcase-variant-popup__trigger-label';
+      triggerLabel.textContent = activeShowcaseSelection[key] || ('Select ' + optionName);
+      trigger.appendChild(triggerLabel);
+
+      const list = document.createElement('ul');
+      list.className = 'showcase-variant-popup__options';
+      list.setAttribute('role', 'listbox');
+
+      values.forEach((value) => {
+        const item = document.createElement('li');
+        item.className = 'showcase-variant-popup__option';
+        item.setAttribute('role', 'option');
+        item.dataset.value = value;
+        item.textContent = value;
+        if (activeShowcaseSelection[key] === value) item.classList.add('is-selected');
+        item.addEventListener('click', () => {
+          setShowcaseValue(key, value);
+          field.classList.add('has-value');
+          field.classList.remove('is-open');
+          trigger.setAttribute('aria-expanded', 'false');
+          renderShowcaseSelectors();
+          updateShowcasePopupVariant();
+        });
+        list.appendChild(item);
+      });
+
+      trigger.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        const wasOpen = field.classList.contains('is-open');
+        wrap.querySelectorAll('.showcase-variant-popup__field.is-open').forEach((other) => {
+          other.classList.remove('is-open');
+          other.querySelector('.showcase-variant-popup__trigger')?.setAttribute('aria-expanded', 'false');
+        });
+        if (!wasOpen) {
+          field.classList.add('is-open');
+          trigger.setAttribute('aria-expanded', 'true');
+        }
+      });
+
+      field.append(trigger, list);
+      if (activeShowcaseSelection[key]) field.classList.add('has-value');
+      wrap.appendChild(field);
+
+      if (values.length === 1 && !activeShowcaseSelection[key]) {
+        setShowcaseValue(key, values[0]);
+        field.classList.add('has-value');
+        triggerLabel.textContent = values[0];
+      }
+    });
+  };
+
+  document.addEventListener('click', (e) => {
+    if (!showcasePopup) return;
+    if (showcasePopup.getAttribute('aria-hidden') === 'true') return;
+    if (e.target.closest('.showcase-variant-popup__field')) return;
+    showcasePopup.querySelectorAll('.showcase-variant-popup__field.is-open').forEach((field) => {
+      field.classList.remove('is-open');
+      field.querySelector('.showcase-variant-popup__trigger')?.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    const opener = e.target.closest('[data-showcase-variant-open]');
+    if (opener && showcasePopup) {
+      e.preventDefault();
+      activeShowcaseForm = opener.closest('[data-showcase-product-form]');
+      const variantsScript = activeShowcaseForm?.querySelector('[data-showcase-variants]');
+      const optionsScript = activeShowcaseForm?.querySelector('[data-showcase-options]');
+      try {
+        activeShowcaseVariants = JSON.parse(variantsScript?.textContent || '[]');
+      } catch (_) {
+        activeShowcaseVariants = [];
+      }
+      try {
+        activeShowcaseOptionNames = JSON.parse(optionsScript?.textContent || '[]');
+      } catch (_) {
+        activeShowcaseOptionNames = [];
+      }
+
+      const firstVariant = activeShowcaseVariants[0] || null;
+      activeShowcaseSelection = {};
+      if (firstVariant) {
+        activeShowcaseOptionNames.forEach((_, index) => {
+          const key = showcaseOptionKey(index);
+          if (firstVariant[key] && unique(activeShowcaseVariants.map(v => v[key])).length === 1) {
+            activeShowcaseSelection[key] = firstVariant[key];
+          }
+        });
+      }
+
+      showcasePopup.querySelector('[data-popup-title]').textContent = opener.dataset.productTitle || '';
+      showcasePopup.querySelector('[data-popup-price]').textContent = opener.dataset.productPrice || '';
+      const image = showcasePopup.querySelector('[data-popup-image]');
+      image.src = opener.dataset.productImage || '';
+      image.alt = opener.dataset.productTitle || '';
+
+      renderShowcaseSelectors();
+      updateShowcasePopupVariant();
+      showcasePopup.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      showcasePopup.querySelector('select, button')?.focus();
+      return;
+    }
+
+    if (e.target.closest('[data-showcase-variant-close]')) {
+      e.preventDefault();
+      closeShowcasePopup();
+      return;
+    }
+
+    const add = e.target.closest('[data-popup-add]');
+    if (add && showcasePopup) {
+      e.preventDefault();
+      if (!activeShowcaseForm) return;
+      const variantId = add.dataset.variantId || activeShowcaseForm.querySelector('input[name="id"]')?.value;
+      if (!variantId) return;
+      const input = activeShowcaseForm.querySelector('input[name="id"]');
+      if (input) input.value = variantId;
+      closeShowcasePopup();
+      if (typeof activeShowcaseForm.requestSubmit === 'function') {
+        activeShowcaseForm.requestSubmit();
+      } else {
+        activeShowcaseForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+      }
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && showcasePopup?.getAttribute('aria-hidden') === 'false') closeShowcasePopup();
+  });
+
   /* Reveal */
   const io = new IntersectionObserver((entries) => {
     entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
@@ -140,31 +374,110 @@
     paint();
   });
 
-  /* Showcase card stack — z-stacked at same position, scroll fades top card up */
+  /* Showcase card stack — pinned Nivis-style scroll cards */
   document.querySelectorAll('[data-card-stack]').forEach((stack) => {
     const cards = stack.querySelectorAll('[data-card]');
     if (!cards.length) return;
-    const N = cards.length;
-    const isDesktop = () => window.matchMedia('(min-width: 1101px)').matches;
+    const section = stack.closest('.showcase');
+    const head = section ? section.querySelector('.showcase__head') : null;
+    const overlays = section ? section.querySelectorAll('.showcase-background-overlay') : [];
+    const backgrounds = Array.from(cards).map(card => card.getAttribute('data-bg')).filter(Boolean);
+    const colors = ['#1f1e21', '#2e2e30', '#3c3c3f', '#4b4a4e', '#59585d', '#68676c'];
+    const nav = document.createElement('div');
+    nav.className = 'product-showcase-navigation';
+    nav.setAttribute('aria-label', 'Product showcase navigation');
+    const navButtons = Array.from(cards).map((card, index) => {
+      const image = card.querySelector('.showcase-product-img');
+      const button = document.createElement('button');
+      const thumb = document.createElement('img');
+      button.type = 'button';
+      button.className = 'product-showcase-nav-thumb';
+      button.setAttribute('aria-label', 'Go to product ' + (index + 1));
+      thumb.src = image?.currentSrc || image?.getAttribute('src') || backgrounds[index] || '';
+      thumb.alt = image?.getAttribute('alt') || '';
+      thumb.width = 56;
+      thumb.height = 56;
+      button.appendChild(thumb);
+      button.addEventListener('click', () => {
+        const totalScroll = Math.max(1, section.offsetHeight - window.innerHeight);
+        const target = section.offsetTop + (index / Math.max(1, cards.length - 1)) * totalScroll;
+        window.scrollTo({ top: target, behavior: 'smooth' });
+      });
+      nav.appendChild(button);
+      return button;
+    });
+    if (navButtons.length) document.body.appendChild(nav);
+    let activeBg = 0;
+    let activeOverlay = 0;
 
-    const reset = () => cards.forEach(c => { c.style.transform = ''; c.style.opacity = ''; });
+    const isDesktop = () => window.matchMedia('(min-width: 1101px)').matches;
+    const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
+
+    const paintBackground = (index) => {
+      if (!overlays.length || !backgrounds[index] || index === activeBg) return;
+      const nextOverlay = (activeOverlay + 1) % overlays.length;
+      overlays[nextOverlay].style.backgroundImage = 'url(' + backgrounds[index] + ')';
+      overlays[nextOverlay].style.opacity = '1';
+      overlays[activeOverlay].style.opacity = '0';
+      activeBg = index;
+      activeOverlay = nextOverlay;
+    };
+
+    if (overlays.length && backgrounds[0]) {
+      overlays[0].style.backgroundImage = 'url(' + backgrounds[0] + ')';
+      overlays[0].style.opacity = '1';
+      overlays[1]?.style.setProperty('opacity', '0');
+    }
+
+    const reset = () => {
+      stack.style.transform = '';
+      nav.classList.remove('is-visible');
+      if (head) { head.style.opacity = ''; head.style.visibility = ''; }
+      cards.forEach(c => {
+        c.style.transform = '';
+        c.style.opacity = '';
+        c.style.backgroundColor = '';
+      });
+    };
 
     const update = () => {
       if (!isDesktop()) { reset(); return; }
-      const r = stack.getBoundingClientRect();
-      const totalScroll = Math.max(1, r.height - window.innerHeight);
-      const scrolled = Math.max(0, Math.min(totalScroll, -r.top));
-      const per = totalScroll / N;
+      const r = section.getBoundingClientRect();
+      const totalScroll = Math.max(1, section.offsetHeight - window.innerHeight);
+      const scrolled = clamp(-r.top, 0, totalScroll);
+      const progress = scrolled / totalScroll;
+      const intro = clamp((window.innerHeight - r.top) / (window.innerHeight * 0.48));
+      const active = Math.min(cards.length - 1, Math.round(progress * (cards.length - 1)));
+
+      stack.style.transform = 'translateY(' + ((1 - intro) * 100) + '%)';
+      if (head) {
+        const headOpacity = clamp(1 - (progress - 0.03) / 0.04);
+        head.style.opacity = headOpacity;
+        head.style.visibility = headOpacity <= 0.01 ? 'hidden' : '';
+      }
+      nav.classList.toggle('is-visible', r.top <= 80 && r.bottom >= window.innerHeight * 0.45);
+      navButtons.forEach((button, i) => button.classList.toggle('active', i === active));
+      paintBackground(active);
+
       cards.forEach((card, i) => {
-        const p = Math.max(0, Math.min(1, (scrolled - i * per) / per));
-        if (p <= 0) {
-          card.style.transform = '';
-        } else {
-          // outgoing card slides up; opacity stays constant
-          const ty = -p * 90;          // vh — translates fully out of view
-          const sc = 1 - p * 0.04;
-          card.style.transform = 'translateY(' + ty + 'vh) scale(' + sc + ')';
+        const raw = progress * (cards.length - 1);
+        const outgoing = clamp(raw - i);
+        const relative = i - active;
+        let y = relative > 0 ? 12 * relative : 0;
+        let scale = relative > 0 ? Math.max(.88, .98 - (relative - 1) * .02) : 1;
+
+        if (i < cards.length - 1 && outgoing > 0) {
+          y = -outgoing * window.innerHeight;
+          scale = 1 - outgoing * .02;
         }
+
+        if (i <= active) {
+          card.style.backgroundColor = '#0d0b14';
+        } else {
+          card.style.backgroundColor = colors[Math.min(relative - 1, colors.length - 1)] || '#0d0b14';
+        }
+
+        card.style.transform = 'translateY(calc(-50% + ' + y + 'px)) scale(' + scale + ')';
         card.style.opacity = '1';
       });
     };

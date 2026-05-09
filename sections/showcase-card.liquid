@@ -1,79 +1,320 @@
-<section class="showcase" data-section-id="{{ section.id }}">
+{%- assign source = collections[section.settings.collection] -%}
+{%- assign limit = section.settings.limit | default: 4 -%}
+{%- assign card_count = 0 -%}
+{%- if source.products.size > 0 -%}
+  {%- for product in source.products limit: limit -%}
+    {%- unless product.gift_card? or product.title contains 'Gift Card' -%}
+      {%- assign card_count = card_count | plus: 1 -%}
+    {%- endunless -%}
+  {%- endfor -%}
+{%- endif -%}
+{%- assign showcase_count = card_count | at_least: 4 -%}
+{%- assign scroll_height = showcase_count | times: 100 -%}
+
+{%- assign fallback_product = collections.all.products.first -%}
+{%- if fallback_product == blank -%}
+  {%- for collection in collections -%}
+    {%- if collection.products.size > 0 -%}
+      {%- assign fallback_product = collection.products.first -%}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+{%- assign fallback_variant = fallback_product.first_available_variant | default: fallback_product.variants.first -%}
+{%- assign fallback_variant_id = fallback_variant.id -%}
+
+<section
+  class="showcase product-showcase-frontpage"
+  id="product-showcase-frontpage"
+  data-section-id="{{ section.id }}"
+  style="--cards:{{ showcase_count }}; --showcase-height: {{ scroll_height }}vh;"
+>
+  <div class="showcase-background-container" aria-hidden="true">
+    <div class="showcase-background-overlay"></div>
+    <div class="showcase-background-overlay"></div>
+  </div>
+
   <header class="showcase__head">
-    <span class="eyebrow accent">{{ section.settings.eyebrow }}</span>
+    <div>
+      <span class="eyebrow accent">{{ section.settings.eyebrow }}</span>
+      {%- if section.settings.intro != blank -%}<p class="showcase__intro">{{ section.settings.intro }}</p>{%- endif -%}
+    </div>
     <h2 class="showcase__heading">{{ section.settings.title }}</h2>
-    {%- if section.settings.intro != blank -%}<p class="showcase__intro">{{ section.settings.intro }}</p>{%- endif -%}
   </header>
 
-  {%- assign source = collections[section.settings.collection] -%}
-  {%- assign limit = section.settings.limit | default: 4 -%}
-
-  {%- assign card_count = source.products.size | at_most: limit -%}
-  <div class="showcase__stack" data-card-stack style="--cards:{{ card_count }};">
+  <div class="showcase-stack-container" data-card-stack>
     {%- if source.products.size > 0 -%}
       {%- for product in source.products limit: limit -%}
-        {%- assign slogan = product.metafields.gymbrat.slogan.value | default: product.title | upcase -%}
-        {%- assign chip   = product.metafields.gymbrat.chip.value   | default: 'GYMBRAT · MADE IN INDIA' -%}
-        {%- assign short  = product.metafields.gymbrat.short.value  | default: product.description | strip_html | truncate: 160 -%}
-        <article class="showcase-card" data-card style="--stack-i:{{ forloop.index0 }}; z-index:{{ forloop.length | minus: forloop.index0 }};">
+        {%- if product.gift_card? or product.title contains 'Gift Card' -%}
+          {%- continue -%}
+        {%- endif -%}
+
+        {%- assign slogan = product.metafields.gymbrat.slogan.value | default: section.settings.fallback_slogan -%}
+        {%- assign chip   = product.metafields.gymbrat.chip.value   | default: product.title -%}
+        {%- assign short  = product.metafields.gymbrat.short.value  | default: product.description | strip_html | truncate: 220 -%}
+        {%- if product.featured_image -%}
+          {%- assign bg_image = product.featured_image | image_url: width: 2400 -%}
+        {%- else -%}
+          {%- assign bg_image = 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=2400&q=85' -%}
+        {%- endif -%}
+
+        <article
+          class="showcase-card"
+          data-card
+          data-bg="{{ bg_image }}"
+          style="--stack-i:{{ forloop.index0 }};"
+        >
           <div class="showcase-grid">
-            {%- comment -%} Column 1 — slogan + chip (337px) {%- endcomment -%}
-            <div class="showcase-col showcase-col--slogan">
-              <h3 class="showcase-col__slogan">{{ slogan }}</h3>
-              <div class="showcase-col__chip">
-                {% render 'icons', icon: 'peak' %} <span>{{ chip }}</span>
+            <div class="showcase-column showcase-product-slogan">
+              <div class="showcase-content-wrapper">
+                <h3 class="showcase-heading">{{ slogan }}</h3>
+                <div class="showcase-product-brand">
+                  <div>
+                    {% render 'icons', icon: 'peak' %}
+                    <span class="showcase-brand-name">{{ chip }}</span>
+                  </div>
+                  <span class="showcase-card-count">{{ forloop.index | prepend: '0' }}</span>
+                </div>
               </div>
             </div>
 
-            {%- comment -%} Column 2 — image (675px) {%- endcomment -%}
-            <a class="showcase-col showcase-col--image" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+            <a class="showcase-column showcase-product-image" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
               {%- if product.featured_image -%}
-                <img src="{{ product.featured_image | image_url: width: 1400 }}" alt="{{ product.featured_image.alt | escape }}" loading="lazy">
+                <img
+                  class="showcase-product-img"
+                  src="{{ product.featured_image | image_url: width: 1468 }}"
+                  alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                  loading="lazy"
+                  width="734"
+                  height="588"
+                >
               {%- else -%}
-                <div class="showcase-col__placeholder"></div>
+                <img
+                  class="showcase-product-img"
+                  src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1468&q=85"
+                  alt="{{ product.title | escape }}"
+                  loading="lazy"
+                  width="734"
+                  height="588"
+                >
               {%- endif -%}
-              {%- if product.tags contains 'new' -%}<span class="badge badge--white showcase-col__badge">NEW</span>{%- endif -%}
             </a>
 
-            {%- comment -%} Column 3 — info + compact actions (title is the slogan on the left) {%- endcomment -%}
-            <div class="showcase-col showcase-col--actions">
-              {%- if short != blank -%}
-                <p class="showcase-col__desc">{{ short }}</p>
-              {%- endif -%}
+            <div class="showcase-column showcase-product-details">
+              <div class="showcase-details-content">
+                <h3 class="showcase-product-title">{{ product.title }}</h3>
 
-              <div class="showcase-col__price-row">
-                <span class="showcase-col__price">
-                  {%- if product.compare_at_price > product.price -%}
-                    <span class="showcase-col__price-strike">{{ product.compare_at_price | money }}</span>
-                  {%- endif -%}
-                  {{ product.price | money }}
-                </span>
-                <span class="showcase-col__stock {% if product.available %}is-in{% endif %}">
-                  {%- if product.available -%}IN STOCK{%- else -%}SOLD OUT{%- endif -%}
-                </span>
+                {%- if short != blank -%}
+                  <div class="showcase-product-description">
+                    <p>{{ short }}</p>
+                  </div>
+                {%- endif -%}
+
+                <div class="showcase-price-stock-wrapper">
+                  <p class="showcase-product-price">
+                    {%- if product.compare_at_price > product.price -%}
+                      <span class="showcase-product-price--compare">{{ product.compare_at_price | money }}</span>
+                    {%- endif -%}
+                    {{ product.price | money }}
+                  </p>
+                  <p class="showcase-stock-status">
+                    {%- if product.available -%}In Stock{%- else -%}Sold Out{%- endif -%}
+                  </p>
+                </div>
+
+                <div class="showcase-button-group">
+                  <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="showcase-actions" data-showcase-product-form>
+                    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                    <input type="hidden" name="quantity" value="1">
+                    <button
+                      type="button"
+                      class="showcase-btn showcase-btn--cart"
+                      data-showcase-variant-open
+                      data-product-title="{{ product.title | escape }}"
+                      data-product-price="{{ product.selected_or_first_available_variant.price | money_without_trailing_zeros }}"
+                      data-product-image="{% if product.featured_image %}{{ product.featured_image | image_url: width: 240 }}{% endif %}"
+                      {% unless product.available %}disabled{% endunless %}
+                    >
+                      <span>Add to cart</span>
+                    </button>
+                    <script type="application/json" data-showcase-variants>
+                      {{ product.variants | json }}
+                    </script>
+                    <script type="application/json" data-showcase-options>
+                      {{ product.options | json }}
+                    </script>
+                  </form>
+                  <a href="{{ product.url }}" class="showcase-btn showcase-btn--learn">
+                    <span>Learn more</span>
+                    {% render 'icons', icon: 'arrow-up-right' %}
+                  </a>
+                </div>
+
+                {%- if product.options_with_values.size > 0 -%}
+                  <div class="showcase-variants-wrapper">
+                    <div class="variant-colors">
+                      {%- for value in product.options_with_values.first.values limit: 4 -%}
+                        <span class="variant-color-button" style="--swatch: {{ value | downcase | replace: ' ', '' }};"><span class="selected-dot"></span></span>
+                      {%- endfor -%}
+                    </div>
+                    <p class="showcase-available-text">Available in <span>{{ product.options_with_values.first.values.size }} colors</span></p>
+                  </div>
+                {%- endif -%}
               </div>
-
-              <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="showcase-actions">
-                <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-                <input type="hidden" name="quantity" value="1">
-
-                <button type="submit" class="showcase-btn showcase-btn--cart" {% unless product.available %}disabled{% endunless %}>
-                  Add to cart
-                </button>
-
-                <button type="submit" formaction="/cart/add" data-buy-now class="showcase-btn showcase-btn--buy" {% unless product.available %}disabled{% endunless %}>
-                  {%- if product.available -%}Buy now{%- else -%}Sold out{%- endif -%}
-                </button>
-              </form>
             </div>
           </div>
         </article>
       {%- endfor -%}
+
+      {%- assign fallback_needed = 4 | minus: card_count -%}
+      {%- if fallback_needed > 0 -%}
+        {%- for i in (1..fallback_needed) -%}
+          {%- case i -%}
+            {%- when 1 -%}
+              {%- assign fallback_title = 'Heavyweight Tee' -%}
+              {%- assign fallback_slogan = 'Built for hard sets and heavier days.' -%}
+              {%- assign fallback_desc = 'Dense cotton, squared shoulders, and a stable drape that holds shape through repeat training days.' -%}
+              {%- assign fallback_price = '$48.00' -%}
+              {%- assign fallback_image = 'https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=1468&q=85' -%}
+              {%- assign fallback_bg = 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=2400&q=85' -%}
+            {%- when 2 -%}
+              {%- assign fallback_title = 'Training Hoodie' -%}
+              {%- assign fallback_slogan = 'Warm-up layer with no soft excuses.' -%}
+              {%- assign fallback_desc = 'Brushed fleece, reinforced rib, and an oversized hood for cold starts before the work begins.' -%}
+              {%- assign fallback_price = '$78.00' -%}
+              {%- assign fallback_image = 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1468&q=85' -%}
+              {%- assign fallback_bg = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=2400&q=85' -%}
+            {%- else -%}
+              {%- assign fallback_title = 'Lift Short' -%}
+              {%- assign fallback_slogan = 'Cut short for range, built long for abuse.' -%}
+              {%- assign fallback_desc = 'Four-way stretch where it matters, secure pockets, and a locked waistband for heavy sessions.' -%}
+              {%- assign fallback_price = '$54.00' -%}
+              {%- assign fallback_image = 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1468&q=85' -%}
+              {%- assign fallback_bg = 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&w=2400&q=85' -%}
+          {%- endcase -%}
+
+          <article
+            class="showcase-card"
+            data-card
+            data-bg="{{ fallback_bg }}"
+            style="--stack-i:{{ card_count | plus: forloop.index0 }};"
+          >
+            <div class="showcase-grid">
+              <div class="showcase-column showcase-product-slogan">
+                <div class="showcase-content-wrapper">
+                  <h3 class="showcase-heading">{{ fallback_slogan }}</h3>
+                  <div class="showcase-product-brand">
+                    <div>
+                      {% render 'icons', icon: 'peak' %}
+                      <span class="showcase-brand-name">{{ fallback_title }}</span>
+                    </div>
+                    <span class="showcase-card-count">{{ card_count | plus: forloop.index | prepend: '0' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <a class="showcase-column showcase-product-image" href="{{ routes.all_products_collection_url }}" aria-label="{{ fallback_title | escape }}">
+                <img
+                  class="showcase-product-img"
+                  src="{{ fallback_image }}"
+                  alt="{{ fallback_title | escape }}"
+                  loading="lazy"
+                  width="734"
+                  height="588"
+                >
+              </a>
+
+              <div class="showcase-column showcase-product-details">
+                <div class="showcase-details-content">
+                  <h3 class="showcase-product-title">{{ fallback_title }}</h3>
+                  <div class="showcase-product-description">
+                    <p>{{ fallback_desc }}</p>
+                  </div>
+                  <div class="showcase-price-stock-wrapper">
+                    <p class="showcase-product-price">{{ fallback_price }}</p>
+                    <p class="showcase-stock-status">In Stock</p>
+                  </div>
+                  <div class="showcase-button-group">
+                    <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="showcase-actions" data-showcase-product-form>
+                      <input type="hidden" name="id" value="{{ fallback_variant_id }}">
+                      <input type="hidden" name="quantity" value="1">
+                      <button
+                        type="button"
+                        class="showcase-btn showcase-btn--cart"
+                        data-showcase-variant-open
+                        data-product-title="{{ fallback_title | escape }}"
+                        data-product-price="{{ fallback_price }}"
+                        data-product-image="{{ fallback_image }}"
+                      >
+                        <span>Add to cart</span>
+                      </button>
+                      <script type="application/json" data-showcase-variants>
+                        [
+                          {"id":{{ fallback_variant_id }},"option1":"Black","option2":"S","available":true,"price":0},
+                          {"id":{{ fallback_variant_id }},"option1":"Black","option2":"M","available":true,"price":0},
+                          {"id":{{ fallback_variant_id }},"option1":"Black","option2":"L","available":true,"price":0},
+                          {"id":{{ fallback_variant_id }},"option1":"Black","option2":"XL","available":true,"price":0},
+                          {"id":{{ fallback_variant_id }},"option1":"Olive","option2":"S","available":true,"price":0},
+                          {"id":{{ fallback_variant_id }},"option1":"Olive","option2":"M","available":true,"price":0},
+                          {"id":{{ fallback_variant_id }},"option1":"Olive","option2":"L","available":true,"price":0},
+                          {"id":{{ fallback_variant_id }},"option1":"Olive","option2":"XL","available":true,"price":0}
+                        ]
+                      </script>
+                      <script type="application/json" data-showcase-options>["Color","Size"]</script>
+                    </form>
+                    <a href="{{ routes.all_products_collection_url }}" class="showcase-btn showcase-btn--learn">
+                      <span>Learn more</span>
+                      {% render 'icons', icon: 'arrow-up-right' %}
+                    </a>
+                  </div>
+                  <div class="showcase-variants-wrapper">
+                    <div class="variant-colors">
+                      <span class="variant-color-button"><span class="selected-dot"></span></span>
+                      <span class="variant-color-button"></span>
+                      <span class="variant-color-button"></span>
+                    </div>
+                    <p class="showcase-available-text">Available in <span>3 colors</span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        {%- endfor -%}
+      {%- endif -%}
     {%- else -%}
       <p class="showcase__empty muted">No products in collection <code>{{ section.settings.collection }}</code> yet.</p>
     {%- endif -%}
   </div>
 </section>
+
+<div class="showcase-variant-popup" data-showcase-variant-popup aria-hidden="true">
+  <button class="showcase-variant-popup__scrim" type="button" data-showcase-variant-close aria-label="Close product details"></button>
+  <div class="showcase-variant-popup__panel" role="dialog" aria-modal="true" aria-label="Select product details">
+    <div class="showcase-variant-popup__head">
+      <span>{% render 'icons', icon: 'peak' %} Select product details</span>
+      <button type="button" data-showcase-variant-close>Close ×</button>
+    </div>
+
+    <div class="showcase-variant-popup__product">
+      <img data-popup-image src="{{ 'gymbrat-logo.svg' | asset_url }}" alt="" width="106" height="118">
+      <div>
+        <h3 data-popup-title></h3>
+        <p data-popup-price></p>
+        <dl>
+          <div><dt>Color:</dt><dd data-popup-color>--</dd></div>
+          <div><dt>Size:</dt><dd data-popup-size>--</dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="showcase-variant-popup__selectors" data-popup-selectors></div>
+
+    <button type="button" class="showcase-variant-popup__add" data-popup-add disabled>
+      <span>Add to cart</span>
+      <span>+</span>
+    </button>
+  </div>
+</div>
 
 {% schema %}
 {
