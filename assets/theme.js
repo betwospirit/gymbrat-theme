@@ -337,6 +337,50 @@
   }, { rootMargin: '0px 0px -10% 0px' });
   document.querySelectorAll('.story, .testimonial, .spec, .card, .feature').forEach(el => { el.classList.add('reveal'); io.observe(el); });
 
+  /* PDP variant dropdown */
+  document.querySelectorAll('[data-pdp-variant-select]').forEach((select) => {
+    const trigger = select.querySelector('[data-pdp-variant-trigger]');
+    const label = select.querySelector('[data-pdp-variant-label]');
+    const list = select.querySelector('[data-pdp-variant-options]');
+    if (!trigger || !label || !list) return;
+
+    const close = () => {
+      select.classList.remove('is-open');
+      trigger.setAttribute('aria-expanded', 'false');
+    };
+
+    trigger.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const isOpen = select.classList.toggle('is-open');
+      trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    list.querySelectorAll('.nivis-pdp__variant-option').forEach((option) => {
+      option.addEventListener('click', () => {
+        if (option.dataset.variantAvailable === 'false') return;
+        const id = option.dataset.variantId;
+        const radio = select.querySelector('input[name="id"][value="' + id + '"]');
+        if (radio) {
+          radio.checked = true;
+          radio.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        list.querySelectorAll('.nivis-pdp__variant-option').forEach((other) => {
+          other.classList.toggle('is-selected', other === option);
+          other.setAttribute('aria-selected', other === option ? 'true' : 'false');
+        });
+        label.textContent = option.dataset.variantLabel || option.textContent.trim();
+        close();
+      });
+    });
+
+    document.addEventListener('click', (ev) => {
+      if (!select.contains(ev.target)) close();
+    });
+    document.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Escape') close();
+    });
+  });
+
   /* PDP carousel — center image highlighted, right images fade out */
   document.querySelectorAll('[data-pdp-carousel]').forEach((carousel) => {
     const imgs = carousel.querySelectorAll('[data-pdp-img]');

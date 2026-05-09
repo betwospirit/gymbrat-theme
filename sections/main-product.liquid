@@ -42,6 +42,68 @@
     </div>
   </section>
 
+  <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" data-product-form class="product-form nivis-pdp__form">
+    <input type="hidden" name="quantity" value="1">
+    <section class="nivis-pdp__bar-wrap" aria-label="Purchase options">
+      <div class="nivis-pdp__bar">
+        <div class="nivis-pdp__bar-col nivis-pdp__bar-col--title">
+          <span class="eyebrow">Shell</span>
+          <strong>{{ product.title }}</strong>
+        </div>
+        <div class="nivis-pdp__bar-col">
+          <span class="eyebrow">Fit</span>
+          <span>{{ fit }}</span>
+        </div>
+        <div class="nivis-pdp__bar-col nivis-pdp__bar-col--variants">
+          <span class="eyebrow">Size</span>
+          {%- assign current_variant = product.selected_or_first_available_variant -%}
+          <div class="nivis-pdp__variant-select" data-pdp-variant-select>
+            {%- for variant in product.variants -%}
+              <input
+                type="radio"
+                class="nivis-pdp__variant-radio"
+                id="{{ section.id }}-variant-{{ variant.id }}"
+                name="id"
+                value="{{ variant.id }}"
+                {% if variant.id == current_variant.id %}checked{% endif %}
+                {% unless variant.available %}disabled{% endunless %}>
+            {%- endfor -%}
+            <button type="button" class="nivis-pdp__variant-trigger" data-pdp-variant-trigger aria-haspopup="listbox" aria-expanded="false">
+              <span data-pdp-variant-label>{{ current_variant.title | replace: 'Default Title', 'OS' }}</span>
+            </button>
+            <ul class="nivis-pdp__variant-options" role="listbox" data-pdp-variant-options>
+              {%- for variant in product.variants -%}
+                <li
+                  class="nivis-pdp__variant-option{% if variant.id == current_variant.id %} is-selected{% endif %}{% unless variant.available %} is-unavailable{% endunless %}"
+                  role="option"
+                  data-variant-id="{{ variant.id }}"
+                  data-variant-label="{{ variant.title | replace: 'Default Title', 'OS' | escape }}"
+                  data-variant-available="{{ variant.available }}"
+                  aria-selected="{% if variant.id == current_variant.id %}true{% else %}false{% endif %}">
+                  {{ variant.title | replace: 'Default Title', 'OS' }}{% unless variant.available %} <span class="nivis-pdp__variant-tag">Sold out</span>{% endunless %}
+                </li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        </div>
+        <div class="nivis-pdp__bar-col nivis-pdp__bar-col--buy">
+          <div class="nivis-pdp__price">
+            <span class="eyebrow">Price</span>
+            <strong>
+              {%- if product.compare_at_price > product.price -%}
+                <s>{{ product.compare_at_price | money }}</s>
+              {%- endif -%}
+              {{ product.price | money }}
+            </strong>
+          </div>
+          <button type="submit" class="add-to-cart-button nivis-pdp__button" {% unless product.available %}disabled{% endunless %}>
+            {%- if product.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
+          </button>
+        </div>
+      </div>
+    </section>
+  </form>
+
   <section class="nivis-pdp__statement">
     <div class="nivis-pdp__contour" aria-hidden="true"></div>
     <div class="nivis-pdp__statement-inner">
@@ -82,52 +144,6 @@
         data-main-image>
     {%- endif -%}
   </section>
-
-  <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" data-product-form class="product-form nivis-pdp__form">
-    <input type="hidden" name="quantity" value="1">
-    <section class="nivis-pdp__bar-wrap" aria-label="Purchase options">
-      <div class="nivis-pdp__bar">
-        <div class="nivis-pdp__bar-col nivis-pdp__bar-col--title">
-          <span class="eyebrow">Shell</span>
-          <strong>{{ product.title }}</strong>
-        </div>
-        <div class="nivis-pdp__bar-col">
-          <span class="eyebrow">Fit</span>
-          <span>{{ fit }}</span>
-        </div>
-        <div class="nivis-pdp__bar-col nivis-pdp__bar-col--variants">
-          <span class="eyebrow">Size</span>
-          <div class="nivis-pdp__variants">
-            {%- for variant in product.variants -%}
-              {%- assign uid = section.id | append: '-variant-' | append: variant.id -%}
-              <input
-                type="radio"
-                id="{{ uid }}"
-                name="id"
-                value="{{ variant.id }}"
-                {% if variant.id == product.selected_or_first_available_variant.id %}checked{% endif %}
-                {% unless variant.available %}disabled{% endunless %}>
-              <label for="{{ uid }}">{{ variant.title | replace: 'Default Title', 'OS' }}</label>
-            {%- endfor -%}
-          </div>
-        </div>
-        <div class="nivis-pdp__bar-col nivis-pdp__bar-col--buy">
-          <div class="nivis-pdp__price">
-            <span class="eyebrow">Price</span>
-            <strong>
-              {%- if product.compare_at_price > product.price -%}
-                <s>{{ product.compare_at_price | money }}</s>
-              {%- endif -%}
-              {{ product.price | money }}
-            </strong>
-          </div>
-          <button type="submit" class="add-to-cart-button nivis-pdp__button" {% unless product.available %}disabled{% endunless %}>
-            {%- if product.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
-          </button>
-        </div>
-      </div>
-    </section>
-  </form>
 
   <section class="nivis-pdp__specs">
     <div class="nivis-pdp__spec-card">
