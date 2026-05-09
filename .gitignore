@@ -4,3 +4,16 @@
 .env
 .env.*
 node_modules/
+
+# Agent / tooling state
+.gstack/
+.claude/
+.agents/
+.codex/
+
+# Scratch / design exploration artifacts
+design-extract-output-pdp/
+image.png
+*.tmp.*
+*~
+*.swp

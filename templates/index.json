@@ -78,5 +78,5 @@
       "block_order": ["q1","q2","q3","q4"]
     }
   },
-  "order": ["hero","marquee","featured","specs","story-1","features","testimonials","faq"]
+  "order": ["hero","featured","marquee","specs","story-1","features","testimonials","faq"]
 }
