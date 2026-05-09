@@ -1,0 +1,30 @@
+<section data-section-id="{{ section.id }}">
+  <header class="collection-head">
+    <div>
+      <span class="eyebrow accent" style="display:block;margin-bottom:12px;">JOURNAL</span>
+      <h1>{{ blog.title | upcase }}</h1>
+    </div>
+  </header>
+  <div class="products products--two">
+    {%- paginate blog.articles by 8 -%}
+      {%- for article in blog.articles -%}
+        <a class="card" href="{{ article.url }}">
+          {%- if article.image -%}
+            <div class="card__media"><img class="card__media-1" src="{{ article.image | image_url: width: 1400 }}" alt="" loading="lazy"></div>
+          {%- endif -%}
+          <span class="eyebrow">{{ article.published_at | date: '%d %b %Y' }}</span>
+          <h3 class="card__name">{{ article.title }}</h3>
+          <p class="card__notes">{{ article.excerpt_or_content | strip_html | truncate: 160 }}</p>
+        </a>
+      {%- endfor -%}
+      {%- if paginate.pages > 1 -%}
+        <div style="grid-column:1/-1;display:flex;justify-content:center;padding:60px var(--gutter);border-bottom:var(--rule);gap:24px;">
+          {%- if paginate.previous -%}<a class="ulink eyebrow" href="{{ paginate.previous.url }}">← Previous</a>{%- endif -%}
+          <span class="mono">{{ paginate.current_page }} / {{ paginate.pages }}</span>
+          {%- if paginate.next -%}<a class="ulink eyebrow" href="{{ paginate.next.url }}">Next →</a>{%- endif -%}
+        </div>
+      {%- endif -%}
+    {%- endpaginate -%}
+  </div>
+</section>
+{% schema %}{ "name": "Blog", "settings": [] }{% endschema %}

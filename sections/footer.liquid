@@ -1,0 +1,39 @@
+<footer class="site-footer" data-section-id="{{ section.id }}">
+  <div class="site-footer__top">
+    <div class="site-footer__brand">{{ settings.brand_wordmark }}<span class="accent">.</span><br><span style="font-size:.35em;color:var(--c-mute);font-weight:400;text-transform:none;letter-spacing:.04em;">Built for the work, not the highlight reel.</span></div>
+    <div class="site-footer__col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="/collections/all">All gear</a></li>
+        <li><a href="/collections/new">New drops</a></li>
+        <li><a href="/collections/tops">Tops</a></li>
+        <li><a href="/collections/bottoms">Bottoms</a></li>
+        <li><a href="/collections/accessories">Accessories</a></li>
+      </ul>
+    </div>
+    <div class="site-footer__col">
+      <h4>Brand</h4>
+      <ul>
+        <li><a href="/pages/about">About</a></li>
+        <li><a href="/pages/lookbook">Lookbook</a></li>
+        <li><a href="/pages/athletes">Athletes</a></li>
+        <li><a href="/blogs/journal">Journal</a></li>
+      </ul>
+    </div>
+    <div class="site-footer__col">
+      <h4>Help</h4>
+      <ul>
+        <li><a href="/pages/contact">Contact</a></li>
+        <li><a href="/pages/shipping">Shipping</a></li>
+        <li><a href="/pages/returns">Returns</a></li>
+        <li><a href="/policies/privacy-policy">Privacy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="site-footer__bottom">
+    <span>© {{ 'now' | date: '%Y' }} {{ settings.brand_wordmark }}</span>
+    <span>Made in India · Shipped worldwide</span>
+  </div>
+</footer>
+
+{% schema %}{ "name": "Footer", "settings": [] }{% endschema %}

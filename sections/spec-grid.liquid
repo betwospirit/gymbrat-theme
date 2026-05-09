@@ -1,0 +1,51 @@
+<section data-section-id="{{ section.id }}">
+  <header class="collection-head">
+    <div>
+      <span class="eyebrow accent" style="display:block;margin-bottom:12px;">{{ section.settings.eyebrow }}</span>
+      <h2>{{ section.settings.title }}</h2>
+    </div>
+    {%- if section.settings.intro != blank -%}<p>{{ section.settings.intro }}</p>{%- endif -%}
+  </header>
+  <div class="specs">
+    {%- for block in section.blocks -%}
+      <div class="spec">
+        <span class="spec__num">[{{ forloop.index | prepend: '00' | slice: -2, 2 }}]</span>
+        <div class="spec__value">{{ block.settings.value }}</div>
+        <div class="spec__label">{{ block.settings.label }}</div>
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Spec grid",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "WHY IT WORKS" },
+    { "type": "text", "id": "title", "label": "Title", "default": "BUILT TO THE NUMBER" },
+    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Every cut, fabric, and finish exists for a measurable reason." }
+  ],
+  "blocks": [
+    {
+      "type": "spec",
+      "name": "Spec",
+      "settings": [
+        { "type": "text", "id": "value", "label": "Value", "default": "240" },
+        { "type": "text", "id": "label", "label": "Label", "default": "GSM heavyweight" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Spec grid",
+      "blocks": [
+        {"type":"spec","settings":{"value":"240","label":"GSM heavyweight"}},
+        {"type":"spec","settings":{"value":"4-WAY","label":"Stretch fabric"}},
+        {"type":"spec","settings":{"value":"FLAT","label":"Lock-stitch seams"}},
+        {"type":"spec","settings":{"value":"40+","label":"Wash cycle tested"}}
+      ]
+    }
+  ]
+}
+{% endschema %}

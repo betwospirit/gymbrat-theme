@@ -1,0 +1,6 @@
+<article class="page" data-section-id="{{ section.id }}">
+  <span class="eyebrow accent" style="display:block;margin-bottom:14px;">PAGE</span>
+  <h1>{{ page.title | upcase }}</h1>
+  <div class="rte">{{ page.content }}</div>
+</article>
+{% schema %}{ "name": "Page", "settings": [] }{% endschema %}

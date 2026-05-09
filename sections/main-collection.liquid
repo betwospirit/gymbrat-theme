@@ -1,0 +1,29 @@
+<section data-section-id="{{ section.id }}">
+  <header class="collection-head">
+    <div>
+      <span class="eyebrow accent" style="display:block;margin-bottom:12px;">SHOP</span>
+      <h1>{{ collection.title | upcase }}</h1>
+    </div>
+    {%- if collection.description != blank -%}<p>{{ collection.description }}</p>{%- endif -%}
+  </header>
+
+  <div class="products products--four">
+    {%- if collection.products.size > 0 -%}
+      {%- paginate collection.products by 16 -%}
+        {%- for product in collection.products -%}
+          {% render 'product-card', product: product %}
+        {%- endfor -%}
+        {%- if paginate.pages > 1 -%}
+          <div style="grid-column:1/-1;display:flex;justify-content:center;padding:60px var(--gutter);border-bottom:var(--rule);gap:24px;">
+            {%- if paginate.previous -%}<a class="ulink eyebrow" href="{{ paginate.previous.url }}">← Previous</a>{%- endif -%}
+            <span class="mono">{{ paginate.current_page }} / {{ paginate.pages }}</span>
+            {%- if paginate.next -%}<a class="ulink eyebrow" href="{{ paginate.next.url }}">Next →</a>{%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endpaginate -%}
+    {%- else -%}
+      <p style="grid-column:1/-1;padding:80px var(--gutter);font-size:18px;text-align:center;color:var(--c-mute);">{{ 'collections.general.no_matches' | t }}</p>
+    {%- endif -%}
+  </div>
+</section>
+{% schema %}{ "name": "Collection", "settings": [] }{% endschema %}

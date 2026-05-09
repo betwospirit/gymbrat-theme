@@ -1,0 +1,27 @@
+<article class="card">
+  <a href="{{ product.url }}" class="card__media" aria-label="{{ product.title | escape }}">
+    {%- if product.featured_image -%}
+      <img class="card__media-1" src="{{ product.featured_image | image_url: width: 900 }}" alt="{{ product.featured_image.alt | escape }}" loading="lazy">
+    {%- endif -%}
+    {%- if product.images.size > 1 -%}
+      <img class="card__media-2" src="{{ product.images[1] | image_url: width: 900 }}" alt="" loading="lazy">
+    {%- endif -%}
+    {%- if product.tags contains 'new' -%}
+      <span class="badge">New</span>
+    {%- elsif product.compare_at_price > product.price -%}
+      <span class="badge badge--cyan">Sale</span>
+    {%- endif -%}
+  </a>
+  <div class="card__head">
+    <h3 class="card__name"><a href="{{ product.url }}">{{ product.title }}</a></h3>
+    <span class="card__price">
+      {%- if product.compare_at_price > product.price -%}
+        <span style="text-decoration:line-through;opacity:.5;margin-right:6px;color:var(--c-mute);">{{ product.compare_at_price | money }}</span>
+      {%- endif -%}
+      {{ product.price | money }}
+    </span>
+  </div>
+  {%- assign desc = product.metafields.gymbrat.short.value | default: product.tags | join: ' · ' -%}
+  {%- if desc != blank -%}<p class="card__notes">{{ desc | truncate: 70 }}</p>{%- endif -%}
+  <div class="card__cta"><a class="ulink eyebrow" href="{{ product.url }}">View →</a></div>
+</article>

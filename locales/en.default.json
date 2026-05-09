@@ -1,0 +1,23 @@
+{
+  "general": {
+    "search": { "title": "Search", "placeholder": "Search the gear" },
+    "newsletter": { "label": "Drop in", "placeholder": "Email", "submit": "Submit", "success": "You're in." },
+    "cart": { "title": "Bag", "empty": "Bag is empty.", "subtotal": "Subtotal", "checkout": "Checkout", "continue": "Keep shopping", "remove": "Remove" },
+    "404": { "title": "Off route.", "subtitle": "This page doesn't exist.", "cta": "Back to base" }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to bag",
+      "sold_out": "Sold out",
+      "unavailable": "Unavailable",
+      "quantity": "Qty",
+      "fabric": "Fabric",
+      "weight": "Weight",
+      "fit": "Fit",
+      "care": "Care",
+      "made_in": "Made in"
+    }
+  },
+  "collections": { "general": { "no_matches": "No matches." } },
+  "blogs": { "article": { "read_more": "Read more", "by_author": "By" } }
+}

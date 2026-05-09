@@ -1,0 +1,98 @@
+<header class="site-header" data-section-id="{{ section.id }}">
+  <a class="site-header__brand site-header__brand--logo" href="/" aria-label="{{ settings.brand_wordmark | default: shop.name }}">
+    <img src="{{ 'gymbrat-logo.svg' | asset_url }}" alt="{{ settings.brand_wordmark | default: shop.name }}">
+  </a>
+
+  <nav class="site-header__center" aria-label="Primary">
+    {%- for link in linklists[section.settings.menu].links -%}
+      <a href="{{ link.url }}">{{ link.title }}</a>
+    {%- else -%}
+      <a href="/collections/all">All Products</a>
+      <a href="/collections">Collections</a>
+      <a href="/pages/contact">Contact</a>
+    {%- endfor -%}
+  </nav>
+
+  <button class="menu-toggle" data-drawer-toggle="MobileMenu" aria-controls="MobileMenu">
+    {% render 'icons', icon: 'menu' %} Menu
+  </button>
+
+  <div class="site-header__corner" role="group" aria-label="Cart and shop">
+    <button class="corner-cta corner-cta--cart" data-drawer-toggle="CartDrawer" aria-controls="CartDrawer">
+      Cart <span class="corner-cta__count" data-cart-count>{{ cart.item_count | prepend: '0' | slice: -2, 2 }}</span>
+    </button>
+    <a class="corner-cta corner-cta--shop" href="/collections/all">
+      Shop <span class="corner-cta__icon">{% render 'icons', icon: 'grid' %}</span>
+    </a>
+  </div>
+</header>
+
+{%- comment -%} Mobile menu {%- endcomment -%}
+<div class="drawer drawer--left" id="MobileMenu" aria-hidden="true">
+  <div class="drawer__scrim" data-drawer-close></div>
+  <div class="drawer__panel">
+    <div class="drawer__head">
+      <span class="smallcaps">Menu</span>
+      <button data-drawer-close aria-label="Close">{% render 'icons', icon: 'close' %}</button>
+    </div>
+    <div class="drawer__body">
+      <ul class="menu-list">
+        {%- for link in linklists[section.settings.menu].links -%}
+          <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+        {%- else -%}
+          <li><a href="/collections/all">Shop all</a></li>
+          <li><a href="/collections/new">New drops</a></li>
+          <li><a href="/pages/lookbook">Lookbook</a></li>
+          <li><a href="/pages/about">About</a></li>
+        {%- endfor -%}
+      </ul>
+    </div>
+    <div class="drawer__foot">
+      <a class="ulink eyebrow" href="{{ routes.account_url }}">Sign in</a>
+    </div>
+  </div>
+</div>
+
+{%- comment -%} Cart drawer {%- endcomment -%}
+<div class="drawer" id="CartDrawer" aria-hidden="true">
+  <div class="drawer__scrim" data-drawer-close></div>
+  <div class="drawer__panel">
+    <div class="drawer__head">
+      <span class="smallcaps">Bag — <span data-cart-count>{{ cart.item_count }}</span></span>
+      <button data-drawer-close aria-label="Close">{% render 'icons', icon: 'close' %}</button>
+    </div>
+    <div class="drawer__body">
+      {%- if cart.item_count > 0 -%}
+        <ul class="cart-list">
+          {%- for item in cart.items -%}
+            <li class="cart-item">
+              <a href="{{ item.url }}">{%- if item.image -%}<img src="{{ item.image | image_url: width: 200 }}" alt="" loading="lazy">{%- endif -%}</a>
+              <div>
+                <a href="{{ item.url }}" class="cart-item__title">{{ item.product.title }}</a>
+                {%- if item.variant.title != 'Default Title' -%}<div class="cart-item__sub">{{ item.variant.title }}</div>{%- endif -%}
+                <div class="cart-item__row">
+                  <span>{{ item.quantity }} × {{ item.original_price | money }}</span>
+                  <a class="cart-item__remove" href="{{ item.url_to_remove }}">Remove</a>
+                </div>
+              </div>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- else -%}
+        <p style="font-size:18px;color:var(--c-mute);margin-top:24px;">{{ 'general.cart.empty' | t }}</p>
+      {%- endif -%}
+    </div>
+    {%- if cart.item_count > 0 -%}
+      <div class="drawer__foot">
+        <div class="cart-foot">
+          <div class="cart-foot__row"><span>{{ 'general.cart.subtotal' | t }}</span><strong>{{ cart.total_price | money_with_currency }}</strong></div>
+          <a href="/checkout" class="btn btn--accent btn--full btn--sq">{{ 'general.cart.checkout' | t }} →</a>
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{ "name": "Header", "settings": [{ "type": "link_list", "id": "menu", "label": "Primary menu", "default": "main-menu" }] }
+{% endschema %}

@@ -1,0 +1,18 @@
+<section data-section-id="{{ section.id }}" style="padding:clamp(60px,8vw,120px) var(--gutter);">
+  <span class="eyebrow accent" style="display:block;margin-bottom:14px;">SEARCH</span>
+  <h1 class="h2" style="margin-bottom:32px;">RESULTS FOR <span class="accent">"{{ search.terms }}"</span></h1>
+
+  <form action="{{ routes.search_url }}" method="get" style="margin-bottom:48px;border-bottom:1px solid var(--c-fg);padding-bottom:14px;">
+    <input type="search" name="q" value="{{ search.terms | escape }}" style="width:100%;border:0;background:transparent;color:var(--c-fg);font-size:24px;letter-spacing:-.02em;font-family:inherit;outline:0;">
+  </form>
+
+  {%- if search.performed -%}
+    <p class="mono muted" style="margin-bottom:24px;">{{ search.results_count }} results</p>
+    <div class="products products--four">
+      {%- for item in search.results -%}
+        {%- if item.object_type == 'product' -%}{% render 'product-card', product: item %}{%- endif -%}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</section>
+{% schema %}{ "name": "Search", "settings": [] }{% endschema %}

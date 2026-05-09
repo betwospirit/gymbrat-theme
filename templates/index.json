@@ -1,0 +1,82 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "video_asset": "hero-video.mp4",
+        "media_only": true
+      }
+    },
+    "marquee": {
+      "type": "marquee",
+      "settings": { "items": "TRAIN HEAVY, TRAIN OFTEN, REST WHEN YOU EARN IT, FIELD TESTED, NO SHORTCUTS, MORE WORK" }
+    },
+    "featured": {
+      "type": "showcase-card",
+      "settings": {
+        "eyebrow": "DROP 04",
+        "title": "NEW THIS WEEK",
+        "intro": "Just landed. Limited stock on each cut. Each piece field-tested through a full training block before it earns a SKU.",
+        "collection": "frontpage",
+        "limit": 4,
+        "fallback_slogan": "TRAIN HEAVY. WEAR HEAVIER."
+      }
+    },
+    "specs": {
+      "type": "spec-grid",
+      "settings": {
+        "eyebrow": "WHY IT WORKS",
+        "title": "BUILT TO THE NUMBER",
+        "intro": "Every cut, fabric, and finish exists for a measurable reason."
+      },
+      "blocks": {
+        "s1": { "type": "spec", "settings": { "value": "240", "label": "GSM heavyweight" } },
+        "s2": { "type": "spec", "settings": { "value": "4-WAY", "label": "Stretch fabric" } },
+        "s3": { "type": "spec", "settings": { "value": "FLAT", "label": "Lock-stitch seams" } },
+        "s4": { "type": "spec", "settings": { "value": "40+", "label": "Wash cycle tested" } }
+      },
+      "block_order": ["s1","s2","s3","s4"]
+    },
+    "story-1": {
+      "type": "editorial-story",
+      "settings": {
+        "eyebrow": "FROM THE FLOOR",
+        "title": "WE TRAIN IN WHAT WE MAKE.",
+        "body": "Gymbrat started in a Gurgaon garage with one rule — if it can't survive a year of squats, it doesn't ship. Every prototype gets worn through a full block before it earns a SKU. Nothing leaves the studio because it looks good in a photo.",
+        "cta_label": "Read the story",
+        "cta_url": "/pages/about",
+        "reverse": false
+      }
+    },
+    "features": {
+      "type": "features",
+      "blocks": {
+        "f1": { "type": "feature", "settings": { "icon": "box", "title": "Free Shipping", "body": "Free shipping in India on orders over ₹2999. Need it sooner? <a href='/pages/contact'>Contact us</a> to arrange expedited delivery." } },
+        "f2": { "type": "feature", "settings": { "icon": "plane", "title": "Free Returns", "body": "14-day no-questions returns on unworn pieces with tags. Tried it, not for you? Send it back." } },
+        "f3": { "type": "feature", "settings": { "icon": "spark", "title": "Built To Last", "body": "Heavyweight cotton, lock-stitch seams, four-way stretch where it matters. Field-tested for 40+ wash cycles." } }
+      },
+      "block_order": ["f1","f2","f3"]
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "settings": { "eyebrow": "FROM THE FLOOR", "title": "WHAT THEY SAY" },
+      "blocks": {
+        "t1": { "type": "testimonial", "settings": { "quote": "Six months in, no pilling, no lost shape. The shorts hold up to leg day in a way nothing else has.", "name": "RAHUL S.", "role": "Powerlifter / Mumbai" } },
+        "t2": { "type": "testimonial", "settings": { "quote": "First brand where the cut works for both deadlifts and the office after. Fits like it was patterned for me.", "name": "ANANYA K.", "role": "Crossfit / Bangalore" } }
+      },
+      "block_order": ["t1","t2"]
+    },
+    "faq": {
+      "type": "faq",
+      "settings": { "title": "QUESTIONS", "intro": "What people ask before they buy." },
+      "blocks": {
+        "q1": { "type": "qa", "settings": { "q": "How does the sizing run?", "a": "True to size for our oversized cuts. If you're between sizes, size down for a snug fit." } },
+        "q2": { "type": "qa", "settings": { "q": "What's the fabric weight?", "a": "Heavyweight 240 GSM cotton on tops. 280 GSM French terry on hoodies. Lightweight stretch on shorts and joggers." } },
+        "q3": { "type": "qa", "settings": { "q": "How do I care for it?", "a": "Cold wash inside-out, hang dry. Skip the tumble dryer to keep the cut and color." } },
+        "q4": { "type": "qa", "settings": { "q": "Shipping and returns?", "a": "Free shipping in India over ₹2999. 14-day returns on unworn pieces with tags." } }
+      },
+      "block_order": ["q1","q2","q3","q4"]
+    }
+  },
+  "order": ["hero","marquee","featured","specs","story-1","features","testimonials","faq"]
+}

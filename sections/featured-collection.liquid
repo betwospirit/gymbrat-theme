@@ -1,0 +1,67 @@
+<section data-section-id="{{ section.id }}">
+  <header class="collection-head">
+    <div>
+      <span class="eyebrow accent" style="display:block;margin-bottom:12px;">{{ section.settings.eyebrow }}</span>
+      <h2>{{ section.settings.title }}</h2>
+    </div>
+    <p>{{ section.settings.intro }}</p>
+  </header>
+
+  {%- assign source = collections[section.settings.collection] -%}
+  <div class="products{% if section.settings.layout == 'two' %} products--two{% elsif section.settings.layout == 'four' %} products--four{% endif %}">
+    {%- if source.products.size > 0 -%}
+      {%- for product in source.products limit: section.settings.limit -%}
+        {% render 'product-card', product: product %}
+      {%- endfor -%}
+    {%- else -%}
+      {%- for block in section.blocks -%}
+        <article class="card">
+          <a href="{{ block.settings.url | default: '#' }}" class="card__media">
+            {%- if block.settings.image != blank -%}<img class="card__media-1" src="{{ block.settings.image | image_url: width: 900 }}" alt="" loading="lazy">{%- endif -%}
+            {%- if block.settings.image_hover != blank -%}<img class="card__media-2" src="{{ block.settings.image_hover | image_url: width: 900 }}" alt="" loading="lazy">{%- endif -%}
+            {%- if block.settings.badge != blank -%}<span class="badge">{{ block.settings.badge }}</span>{%- endif -%}
+          </a>
+          <div class="card__head">
+            <h3 class="card__name">{{ block.settings.name }}</h3>
+            <span class="card__price">{{ block.settings.price }}</span>
+          </div>
+          <p class="card__notes">{{ block.settings.notes }}</p>
+          <div class="card__cta"><a class="ulink eyebrow" href="{{ block.settings.url | default: '#' }}">View →</a></div>
+        </article>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured collection",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "DROP 04" },
+    { "type": "text", "id": "title", "label": "Title", "default": "NEW THIS WEEK" },
+    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Just landed. Limited stock on each cut." },
+    { "type": "collection", "id": "collection", "label": "Source collection" },
+    { "type": "select", "id": "layout", "label": "Layout", "default": "three", "options": [{"value":"three","label":"Three"},{"value":"two","label":"Two"},{"value":"four","label":"Four"}] },
+    { "type": "range", "id": "limit", "label": "Max products", "min": 2, "max": 12, "step": 1, "default": 4 }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "image_picker", "id": "image_hover", "label": "Hover image" },
+        { "type": "text", "id": "badge", "label": "Badge", "default": "NEW" },
+        { "type": "text", "id": "name", "label": "Name", "default": "OVERSIZED CREW" },
+        { "type": "text", "id": "notes", "label": "Notes", "default": "240 GSM heavyweight cotton · drop-shoulder cut" },
+        { "type": "text", "id": "price", "label": "Price", "default": "₹ 2,499" },
+        { "type": "url", "id": "url", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Featured collection", "blocks": [{"type":"card"},{"type":"card"},{"type":"card"},{"type":"card"}] }
+  ]
+}
+{% endschema %}

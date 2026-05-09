@@ -1,0 +1,14 @@
+{
+  "current": {
+    "brand_wordmark": "GYMBRAT",
+    "brand_short": "GB",
+    "color_bg": "#0D0B14",
+    "color_fg": "#FFFFFF",
+    "color_accent": "#BFEE16",
+    "color_cyan": "#00AFD0",
+    "color_steel": "#385988",
+    "color_mute": "#BDBEC0",
+    "color_panel": "#15131D"
+  },
+  "presets": { "Default": { "brand_wordmark": "GYMBRAT" } }
+}

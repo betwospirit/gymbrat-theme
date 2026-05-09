@@ -1,0 +1,44 @@
+<section class="faq" data-section-id="{{ section.id }}">
+  <header class="faq__head">
+    <h2>{{ section.settings.title }}</h2>
+    <p class="muted" style="font-size:14px;line-height:1.5;max-width:40ch;">{{ section.settings.intro }}</p>
+  </header>
+  {%- for block in section.blocks -%}
+    <details class="faq__item">
+      <summary class="faq__q">{{ block.settings.q }}<span class="faq__plus">+</span></summary>
+      <div class="faq__a">{{ block.settings.a }}</div>
+    </details>
+  {%- endfor -%}
+</section>
+
+{% schema %}
+{
+  "name": "FAQ",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title", "default": "QUESTIONS" },
+    { "type": "textarea", "id": "intro", "label": "Intro", "default": "What people ask before they buy." }
+  ],
+  "blocks": [
+    {
+      "type": "qa",
+      "name": "Q & A",
+      "settings": [
+        { "type": "text", "id": "q", "label": "Question", "default": "How does the sizing run?" },
+        { "type": "textarea", "id": "a", "label": "Answer", "default": "True to size for our oversized cuts. If you're between sizes, size down for a snug fit." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        {"type":"qa","settings":{"q":"How does the sizing run?","a":"True to size for our oversized cuts. If you're between sizes, size down for a snug fit."}},
+        {"type":"qa","settings":{"q":"What's the fabric weight?","a":"Heavyweight 240 GSM cotton on tops. 280 GSM French terry on hoodies. Lightweight stretch on shorts and joggers."}},
+        {"type":"qa","settings":{"q":"How do I care for it?","a":"Cold wash inside-out, hang dry. Skip the tumble dryer to keep the cut and color."}},
+        {"type":"qa","settings":{"q":"Shipping and returns?","a":"Free shipping in India over ₹2999. 14-day returns on unworn pieces with tags."}}
+      ]
+    }
+  ]
+}
+{% endschema %}

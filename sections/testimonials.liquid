@@ -1,0 +1,50 @@
+<section class="testimonials" data-section-id="{{ section.id }}">
+  <header class="testimonials__head">
+    <span class="eyebrow accent" style="display:block;margin-bottom:12px;">{{ section.settings.eyebrow }}</span>
+    <h2>{{ section.settings.title }}</h2>
+  </header>
+  <div class="testimonials__grid">
+    {%- for block in section.blocks -%}
+      <div class="testimonial">
+        <p class="testimonial__quote">{{ block.settings.quote }}</p>
+        <div class="testimonial__by">
+          {%- if block.settings.avatar != blank -%}
+            <img class="testimonial__avatar" src="{{ block.settings.avatar | image_url: width: 120 }}" alt="">
+          {%- else -%}
+            <div class="testimonial__avatar"></div>
+          {%- endif -%}
+          <div>
+            <div class="testimonial__name">{{ block.settings.name }}</div>
+            <div class="testimonial__role">{{ block.settings.role }}</div>
+          </div>
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "FROM THE FLOOR" },
+    { "type": "text", "id": "title", "label": "Title", "default": "WHAT THEY SAY" }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        { "type": "textarea", "id": "quote", "label": "Quote", "default": "Six months in, no pilling, no lost shape. The shorts hold up to leg day in a way nothing else has." },
+        { "type": "image_picker", "id": "avatar", "label": "Avatar" },
+        { "type": "text", "id": "name", "label": "Name", "default": "RAHUL S." },
+        { "type": "text", "id": "role", "label": "Role", "default": "Powerlifter / Mumbai" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Testimonials", "blocks": [{"type":"testimonial"},{"type":"testimonial"}] }
+  ]
+}
+{% endschema %}

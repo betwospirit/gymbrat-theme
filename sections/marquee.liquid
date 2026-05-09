@@ -1,0 +1,21 @@
+<section class="marquee" data-section-id="{{ section.id }}" aria-hidden="true">
+  <div class="marquee__track">
+    {%- for i in (1..2) -%}
+      {%- assign items = section.settings.items | split: ',' -%}
+      {%- for it in items -%}
+        <span class="marquee__item">{{ it | strip }}</span>
+        <span class="marquee__item marquee__sep">★</span>
+      {%- endfor -%}
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Marquee",
+  "settings": [
+    { "type": "text", "id": "items", "label": "Items (comma separated)", "default": "TRAIN HEAVY, TRAIN OFTEN, REST WHEN YOU EARN IT, BUILT IN GURGAON, FIELD TESTED, NO SHORTCUTS, MORE WORK" }
+  ],
+  "presets": [{ "name": "Marquee" }]
+}
+{% endschema %}

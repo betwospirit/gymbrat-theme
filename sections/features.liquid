@@ -1,0 +1,46 @@
+<section class="features" data-section-id="{{ section.id }}">
+  {%- for block in section.blocks -%}
+    <div class="feature">
+      <div class="feature__icon">{% render 'icons', icon: block.settings.icon %}</div>
+      <div>
+        <h3>{{ block.settings.title }}</h3>
+        <p>{{ block.settings.body }}</p>
+      </div>
+    </div>
+  {%- endfor -%}
+</section>
+
+{% schema %}
+{
+  "name": "Feature blocks",
+  "max_blocks": 4,
+  "settings": [],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Icon", "default": "box",
+          "options": [
+            {"value":"box","label":"Box"},
+            {"value":"plane","label":"Plane"},
+            {"value":"spark","label":"Spark"},
+            {"value":"peak","label":"Peak"}
+          ] },
+        { "type": "text", "id": "title", "label": "Title", "default": "Free Shipping" },
+        { "type": "textarea", "id": "body", "label": "Body", "default": "Free shipping in India on orders over ₹2999. Need it sooner? <a href='/pages/contact'>Contact us</a> to arrange expedited delivery." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Feature blocks",
+      "blocks": [
+        {"type":"feature","settings":{"icon":"box","title":"Free Shipping","body":"Free shipping in India on orders over ₹2999. Need it sooner? <a href='/pages/contact'>Contact us</a> to arrange expedited delivery."}},
+        {"type":"feature","settings":{"icon":"plane","title":"Free Returns","body":"14-day no-questions returns on unworn pieces with tags. Tried it, not for you? Send it back."}},
+        {"type":"feature","settings":{"icon":"spark","title":"Built To Last","body":"Heavyweight cotton, lock-stitch seams, four-way stretch where it matters. Field-tested for 40+ wash cycles."}}
+      ]
+    }
+  ]
+}
+{% endschema %}

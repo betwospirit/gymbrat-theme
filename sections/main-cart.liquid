@@ -1,0 +1,40 @@
+<section data-section-id="{{ section.id }}" style="padding:clamp(60px,8vw,120px) var(--gutter); max-width:1100px; margin:0 auto;">
+  <h1 class="h2" style="margin-bottom:40px;">{{ 'general.cart.title' | t | upcase }} <span class="accent">— {{ cart.item_count }}</span></h1>
+
+  {%- if cart.item_count > 0 -%}
+    <form action="{{ routes.cart_url }}" method="post" novalidate>
+      <ul class="cart-list">
+        {%- for item in cart.items -%}
+          <li class="cart-item" style="grid-template-columns:120px 1fr;">
+            <a href="{{ item.url }}">{%- if item.image -%}<img src="{{ item.image | image_url: width: 280 }}" alt="" loading="lazy">{%- endif -%}</a>
+            <div>
+              <a href="{{ item.url }}" class="cart-item__title" style="font-size:20px;">{{ item.product.title }}</a>
+              {%- if item.variant.title != 'Default Title' -%}<div class="cart-item__sub">{{ item.variant.title }}</div>{%- endif -%}
+              <div class="cart-item__row">
+                <div class="qty" style="height:42px;">
+                  <button type="button" data-qty-step="-1">−</button>
+                  <input type="number" name="updates[]" value="{{ item.quantity }}" min="0">
+                  <button type="button" data-qty-step="1">+</button>
+                </div>
+                <span>{{ item.line_price | money }}</span>
+                <a class="cart-item__remove" href="{{ item.url_to_remove }}">Remove</a>
+              </div>
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:32px;gap:24px;flex-wrap:wrap;">
+        <a href="/collections/all" class="ulink eyebrow">← {{ 'general.cart.continue' | t }}</a>
+        <div style="text-align:right;">
+          <div class="mono" style="margin-bottom:14px;">{{ 'general.cart.subtotal' | t }} — <strong style="color:var(--c-accent);">{{ cart.total_price | money_with_currency }}</strong></div>
+          <button type="submit" name="checkout" class="btn btn--accent">{{ 'general.cart.checkout' | t }} →</button>
+        </div>
+      </div>
+    </form>
+  {%- else -%}
+    <p style="font-size:18px;color:var(--c-mute);">{{ 'general.cart.empty' | t }}</p>
+    <p style="margin-top:24px;"><a href="/collections/all" class="btn btn--accent">Shop the gear</a></p>
+  {%- endif -%}
+</section>
+{% schema %}{ "name": "Cart", "settings": [] }{% endschema %}

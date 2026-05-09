@@ -1,0 +1,91 @@
+<section class="showcase" data-section-id="{{ section.id }}">
+  <header class="showcase__head">
+    <span class="eyebrow accent">{{ section.settings.eyebrow }}</span>
+    <h2 class="showcase__heading">{{ section.settings.title }}</h2>
+    {%- if section.settings.intro != blank -%}<p class="showcase__intro">{{ section.settings.intro }}</p>{%- endif -%}
+  </header>
+
+  {%- assign source = collections[section.settings.collection] -%}
+  {%- assign limit = section.settings.limit | default: 4 -%}
+
+  {%- assign card_count = source.products.size | at_most: limit -%}
+  <div class="showcase__stack" data-card-stack style="--cards:{{ card_count }};">
+    {%- if source.products.size > 0 -%}
+      {%- for product in source.products limit: limit -%}
+        {%- assign slogan = product.metafields.gymbrat.slogan.value | default: product.title | upcase -%}
+        {%- assign chip   = product.metafields.gymbrat.chip.value   | default: 'GYMBRAT · MADE IN INDIA' -%}
+        {%- assign short  = product.metafields.gymbrat.short.value  | default: product.description | strip_html | truncate: 160 -%}
+        <article class="showcase-card" data-card style="--stack-i:{{ forloop.index0 }}; z-index:{{ forloop.length | minus: forloop.index0 }};">
+          <div class="showcase-grid">
+            {%- comment -%} Column 1 — slogan + chip (337px) {%- endcomment -%}
+            <div class="showcase-col showcase-col--slogan">
+              <h3 class="showcase-col__slogan">{{ slogan }}</h3>
+              <div class="showcase-col__chip">
+                {% render 'icons', icon: 'peak' %} <span>{{ chip }}</span>
+              </div>
+            </div>
+
+            {%- comment -%} Column 2 — image (675px) {%- endcomment -%}
+            <a class="showcase-col showcase-col--image" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+              {%- if product.featured_image -%}
+                <img src="{{ product.featured_image | image_url: width: 1400 }}" alt="{{ product.featured_image.alt | escape }}" loading="lazy">
+              {%- else -%}
+                <div class="showcase-col__placeholder"></div>
+              {%- endif -%}
+              {%- if product.tags contains 'new' -%}<span class="badge badge--white showcase-col__badge">NEW</span>{%- endif -%}
+            </a>
+
+            {%- comment -%} Column 3 — info + compact actions (title is the slogan on the left) {%- endcomment -%}
+            <div class="showcase-col showcase-col--actions">
+              {%- if short != blank -%}
+                <p class="showcase-col__desc">{{ short }}</p>
+              {%- endif -%}
+
+              <div class="showcase-col__price-row">
+                <span class="showcase-col__price">
+                  {%- if product.compare_at_price > product.price -%}
+                    <span class="showcase-col__price-strike">{{ product.compare_at_price | money }}</span>
+                  {%- endif -%}
+                  {{ product.price | money }}
+                </span>
+                <span class="showcase-col__stock {% if product.available %}is-in{% endif %}">
+                  {%- if product.available -%}IN STOCK{%- else -%}SOLD OUT{%- endif -%}
+                </span>
+              </div>
+
+              <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="showcase-actions">
+                <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                <input type="hidden" name="quantity" value="1">
+
+                <button type="submit" class="showcase-btn showcase-btn--cart" {% unless product.available %}disabled{% endunless %}>
+                  Add to cart
+                </button>
+
+                <button type="submit" formaction="/cart/add" data-buy-now class="showcase-btn showcase-btn--buy" {% unless product.available %}disabled{% endunless %}>
+                  {%- if product.available -%}Buy now{%- else -%}Sold out{%- endif -%}
+                </button>
+              </form>
+            </div>
+          </div>
+        </article>
+      {%- endfor -%}
+    {%- else -%}
+      <p class="showcase__empty muted">No products in collection <code>{{ section.settings.collection }}</code> yet.</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Product showcase",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "DROP 04" },
+    { "type": "text", "id": "title", "label": "Title", "default": "BUILT FOR THE WORK" },
+    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Each piece, field-tested through a full training block before it earns a SKU." },
+    { "type": "collection", "id": "collection", "label": "Source collection" },
+    { "type": "range", "id": "limit", "label": "Max products", "min": 1, "max": 8, "step": 1, "default": 4 },
+    { "type": "text", "id": "fallback_slogan", "label": "Fallback slogan (when product has no metafield)", "default": "TRAIN HEAVY. WEAR HEAVIER." }
+  ],
+  "presets": [{ "name": "Product showcase" }]
+}
+{% endschema %}

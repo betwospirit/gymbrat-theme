@@ -1,0 +1,250 @@
+{%- comment -%}
+  Nivis-inspired PDP structure for Gymbrat.
+  Reference calibration from .tmp/nivis-inspection/pages/products-protego-pro-shell/manifest.json:
+  - 1440 viewport with 60px gutters -> 1320px sticky product bar
+  - 758px editorial/spec panels
+  - 992px feature grid, 3 columns, 16px gap
+  - glass panels rgba(32,31,29,.7), blur 12-16px, 8px radius
+{%- endcomment -%}
+
+{%- assign first_image = product.featured_image | default: product.images[0] -%}
+{%- assign second_image = product.images[1] | default: first_image -%}
+{%- assign third_image = product.images[2] | default: first_image -%}
+{%- assign fourth_image = product.images[3] | default: second_image -%}
+{%- assign material = product.metafields.gymbrat.fabric.value | default: 'High-compression performance knit' -%}
+{%- assign fit = product.metafields.gymbrat.fit.value | default: 'Athletic compression fit' -%}
+{%- assign made_in = product.metafields.gymbrat.made_in.value | default: 'India' -%}
+{%- capture product_story -%}
+  {%- if product.description != blank -%}
+    {{ product.description | strip_html }}
+  {%- else -%}
+    Engineered for heavy sessions and clean daily rotation. A locked-in compression layer with enough stretch for pressing, pulling, and moving without the shirt fighting your body.
+  {%- endif -%}
+{%- endcapture -%}
+
+<article class="nivis-pdp" data-section-id="{{ section.id }}">
+  <section class="nivis-pdp__hero" aria-labelledby="ProductTitle-{{ section.id }}">
+    <div class="nivis-pdp__hero-bg" aria-hidden="true"></div>
+    {%- if first_image -%}
+      <img
+        class="nivis-pdp__hero-img"
+        src="{{ first_image | image_url: width: 1800 }}"
+        alt="{{ first_image.alt | default: product.title | escape }}"
+        width="{{ first_image.width }}"
+        height="{{ first_image.height }}"
+        loading="eager">
+    {%- else -%}
+      <div class="nivis-pdp__placeholder"></div>
+    {%- endif -%}
+    <div class="nivis-pdp__hero-label">
+      <span class="eyebrow">{{ product.vendor | default: 'GYMBRAT' }}</span>
+      <span>{{ product.type | default: 'Performance layer' }}</span>
+    </div>
+  </section>
+
+  <section class="nivis-pdp__statement">
+    <div class="nivis-pdp__contour" aria-hidden="true"></div>
+    <div class="nivis-pdp__statement-inner">
+      <span class="eyebrow accent">Product thesis</span>
+      <h1 id="ProductTitle-{{ section.id }}">{{ product.title }}</h1>
+      <p>{{ product_story | strip | truncatewords: 58 }}</p>
+    </div>
+  </section>
+
+  <section class="nivis-pdp__presentation" data-main-gallery>
+    <div class="nivis-pdp__thumbs" aria-label="Product images">
+      {%- for image in product.images limit: 6 -%}
+        <button
+          type="button"
+          class="nivis-pdp__thumb{% if forloop.first %} is-active{% endif %}"
+          data-thumb
+          data-src="{{ image | image_url: width: 1800 }}"
+          aria-label="Show image {{ forloop.index }}">
+          <img
+            src="{{ image | image_url: width: 160 }}"
+            alt=""
+            width="{{ image.width }}"
+            height="{{ image.height }}"
+            loading="lazy">
+        </button>
+      {%- endfor -%}
+    </div>
+    <div class="nivis-pdp__presentation-blue" aria-hidden="true"></div>
+    <div class="nivis-pdp__presentation-black" aria-hidden="true"></div>
+    {%- if first_image -%}
+      <img
+        class="nivis-pdp__presentation-img"
+        src="{{ first_image | image_url: width: 1800 }}"
+        alt="{{ first_image.alt | default: product.title | escape }}"
+        width="{{ first_image.width }}"
+        height="{{ first_image.height }}"
+        loading="lazy"
+        data-main-image>
+    {%- endif -%}
+  </section>
+
+  <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" data-product-form class="product-form nivis-pdp__form">
+    <input type="hidden" name="quantity" value="1">
+    <section class="nivis-pdp__bar-wrap" aria-label="Purchase options">
+      <div class="nivis-pdp__bar">
+        <div class="nivis-pdp__bar-col nivis-pdp__bar-col--title">
+          <span class="eyebrow">Shell</span>
+          <strong>{{ product.title }}</strong>
+        </div>
+        <div class="nivis-pdp__bar-col">
+          <span class="eyebrow">Fit</span>
+          <span>{{ fit }}</span>
+        </div>
+        <div class="nivis-pdp__bar-col nivis-pdp__bar-col--variants">
+          <span class="eyebrow">Size</span>
+          <div class="nivis-pdp__variants">
+            {%- for variant in product.variants -%}
+              {%- assign uid = section.id | append: '-variant-' | append: variant.id -%}
+              <input
+                type="radio"
+                id="{{ uid }}"
+                name="id"
+                value="{{ variant.id }}"
+                {% if variant.id == product.selected_or_first_available_variant.id %}checked{% endif %}
+                {% unless variant.available %}disabled{% endunless %}>
+              <label for="{{ uid }}">{{ variant.title | replace: 'Default Title', 'OS' }}</label>
+            {%- endfor -%}
+          </div>
+        </div>
+        <div class="nivis-pdp__bar-col nivis-pdp__bar-col--buy">
+          <div class="nivis-pdp__price">
+            <span class="eyebrow">Price</span>
+            <strong>
+              {%- if product.compare_at_price > product.price -%}
+                <s>{{ product.compare_at_price | money }}</s>
+              {%- endif -%}
+              {{ product.price | money }}
+            </strong>
+          </div>
+          <button type="submit" class="add-to-cart-button nivis-pdp__button" {% unless product.available %}disabled{% endunless %}>
+            {%- if product.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
+          </button>
+        </div>
+      </div>
+    </section>
+  </form>
+
+  <section class="nivis-pdp__specs">
+    <div class="nivis-pdp__spec-card">
+      <header>
+        <span class="eyebrow accent">Technical specifications</span>
+        <h2>Built for pressure, sweat, and repeat work.</h2>
+      </header>
+      <dl>
+        <div><dt>Fabric</dt><dd>{{ material }}</dd></div>
+        <div><dt>Fit</dt><dd>{{ fit }}</dd></div>
+        <div><dt>Construction</dt><dd>Flat seams, reinforced collar, stable hem memory.</dd></div>
+        <div><dt>Training use</dt><dd>Strength work, conditioning, travel, and daily wear.</dd></div>
+        <div><dt>Made in</dt><dd>{{ made_in }}</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="nivis-pdp__feature nivis-pdp__feature--hood">
+    {%- if second_image -%}
+      <img
+        src="{{ second_image | image_url: width: 1600 }}"
+        alt=""
+        width="{{ second_image.width }}"
+        height="{{ second_image.height }}"
+        loading="lazy">
+    {%- endif -%}
+    <div class="nivis-pdp__feature-copy">
+      <span class="eyebrow">01 / Compression</span>
+      <h2>Locked in without feeling locked up.</h2>
+      <div class="nivis-pdp__glass">
+        <h3>Training-ready stretch</h3>
+        <p>The layer moves with pressing, pulling, hinging, and sprint work while keeping a close athletic silhouette.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="nivis-pdp__micro">
+    <div>
+      <span class="eyebrow">02 / Surface</span>
+      <h2>Sweat-ready texture with a clean studio finish.</h2>
+    </div>
+    {%- if third_image -%}
+      <img
+        src="{{ third_image | image_url: width: 900 }}"
+        alt=""
+        width="{{ third_image.width }}"
+        height="{{ third_image.height }}"
+        loading="lazy">
+    {%- endif -%}
+  </section>
+
+  <section class="nivis-pdp__feature nivis-pdp__feature--pocket">
+    {%- if fourth_image -%}
+      <img
+        src="{{ fourth_image | image_url: width: 1600 }}"
+        alt=""
+        width="{{ fourth_image.width }}"
+        height="{{ fourth_image.height }}"
+        loading="lazy">
+    {%- endif -%}
+    <div class="nivis-pdp__feature-copy">
+      <span class="eyebrow">03 / Session detail</span>
+      <h2>Every edge is tuned for actual gym movement.</h2>
+      <div class="nivis-pdp__glass">
+        <h3>Shape retention</h3>
+        <p>The collar, sleeve, and hem are built to recover after long sets, heavy sweat, and repeated washes.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="nivis-pdp__features-grid">
+    <header>
+      <span class="eyebrow accent">Discover features</span>
+      <h2>Small decisions, visible under load.</h2>
+    </header>
+    <div class="nivis-pdp__boxes">
+      {%- assign placeholders = 'Four-way movement|Stretch direction follows the way your shoulders and lats actually open.;Compression profile|Close to the body with enough give for deep reps.;Flat seam comfort|Low-friction seams stay quiet under a pump cover.;Breathable knit|Keeps airflow moving through long conditioning blocks.;Stable collar|Recovers after sweat, racks, and repeated pulls.;No-distraction hem|Sits flat under belts, shorts, and joggers.;Wash memory|Built to keep shape across weekly rotation.;Gym-to-street finish|Clean enough after the session, technical enough during it.;India-ready build|Cut for heat, humidity, and heavy training days.' -%}
+      {%- assign rows = placeholders | split: ';' -%}
+      {%- for row in rows -%}
+        {%- assign parts = row | split: '|' -%}
+        <article class="nivis-pdp__box">
+          <span>{% render 'icons', icon: 'spark' %}</span>
+          <h3>{{ parts[0] }}</h3>
+          <p>{{ parts[1] }}</p>
+        </article>
+      {%- endfor -%}
+    </div>
+  </section>
+
+  <section class="nivis-pdp__faq">
+    <div class="nivis-pdp__faq-bg" aria-hidden="true">
+      {%- if first_image -%}
+        <img
+          src="{{ first_image | image_url: width: 1800 }}"
+          alt=""
+          width="{{ first_image.width }}"
+          height="{{ first_image.height }}"
+          loading="lazy">
+      {%- endif -%}
+    </div>
+    <div class="nivis-pdp__faq-wrap">
+      <div class="nivis-pdp__faq-intro">
+        <span class="eyebrow accent">FAQ</span>
+        <h2>Before you add it to cart.</h2>
+        <p>Quick answers for fit, care, shipping, and training use.</p>
+      </div>
+      {%- assign faq_pairs = 'How does the sizing run?|Choose your usual compression size. Size up if you want a looser training fit.;What is it best for?|Lifting, conditioning, travel layers, and daily athleisure rotation.;How do I care for it?|Cold wash inside out and hang dry to preserve fabric recovery and print quality.;Shipping and returns?|Standard Gymbrat shipping and return rules apply at checkout.' -%}
+      {%- assign faq_rows = faq_pairs | split: ';' -%}
+      {%- for row in faq_rows -%}
+        {%- assign parts = row | split: '|' -%}
+        <details class="nivis-pdp__faq-item">
+          <summary>{{ parts[0] }}<span>+</span></summary>
+          <p>{{ parts[1] }}</p>
+        </details>
+      {%- endfor -%}
+    </div>
+  </section>
+</article>
+
+{% schema %}{ "name": "Product", "settings": [] }{% endschema %}

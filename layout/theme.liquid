@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}" class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="{{ settings.color_bg }}">
+    <link rel="canonical" href="{{ canonical_url }}">
+
+    <title>
+      {{ page_title }}{% if current_tags %} — {{ current_tags | join: ', ' }}{% endif %}{% unless page_title contains shop.name %} — {{ shop.name }}{% endunless %}
+    </title>
+    {% if page_description %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=VT323&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    {{ content_for_header }}
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+
+    <style>
+      :root{
+        --c-bg:{{ settings.color_bg }};
+        --c-fg:{{ settings.color_fg }};
+        --c-accent:{{ settings.color_accent }};
+        --c-cyan:{{ settings.color_cyan }};
+        --c-steel:{{ settings.color_steel }};
+        --c-mute:{{ settings.color_mute }};
+        --c-panel:{{ settings.color_panel }};
+      }
+    </style>
+
+    <script>document.documentElement.classList.replace('no-js','js');</script>
+  </head>
+  <body class="template-{{ template | replace: '.', '-' | handle }}">
+    <a class="skip-to-content" href="#MainContent">Skip to content</a>
+    {% sections 'group-header' %}
+    <main id="MainContent" role="main">{{ content_for_layout }}</main>
+    {% sections 'group-footer' %}
+    {% render 'float-subscribe' %}
+    <script src="{{ 'theme.js' | asset_url }}" defer></script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+<article class="page" data-section-id="{{ section.id }}" style="max-width:72ch;">
+  <span class="eyebrow accent" style="display:block;margin-bottom:14px;">{{ article.published_at | date: '%d %b %Y' }}</span>
+  <h1 style="margin-bottom:14px;">{{ article.title | upcase }}</h1>
+  <p class="muted" style="margin-bottom:32px;font-size:14px;">{{ 'blogs.article.by_author' | t }} {{ article.author }}</p>
+  {%- if article.image -%}
+    <img src="{{ article.image | image_url: width: 2000 }}" alt="" style="margin: 0 calc(var(--gutter) * -1) 40px; width: calc(100% + 2 * var(--gutter)); max-width: none;">
+  {%- endif -%}
+  <div class="rte">{{ article.content }}</div>
+  <hr style="border:0;border-top:var(--rule);margin:60px 0;">
+  <div style="display:flex;justify-content:space-between;font-size:11px;letter-spacing:.18em;text-transform:uppercase;">
+    {%- if blog.previous_article -%}<a class="ulink" href="{{ blog.previous_article }}">← Previous</a>{%- else -%}<span></span>{%- endif -%}
+    {%- if blog.next_article -%}<a class="ulink" href="{{ blog.next_article }}">Next →</a>{%- endif -%}
+  </div>
+</article>
+{% schema %}{ "name": "Article", "settings": [] }{% endschema %}

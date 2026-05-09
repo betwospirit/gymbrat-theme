@@ -1,0 +1,9 @@
+{
+  "type": "footer",
+  "name": "Footer",
+  "sections": {
+    "newsletter": { "type": "newsletter" },
+    "footer": { "type": "footer" }
+  },
+  "order": ["newsletter", "footer"]
+}

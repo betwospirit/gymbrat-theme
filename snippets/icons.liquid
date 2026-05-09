@@ -1,0 +1,30 @@
+{%- case icon -%}
+  {%- when 'search' -%}
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
+  {%- when 'bag' -%}
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 5h10l-.7 9.3a1 1 0 0 1-1 .7H4.7a1 1 0 0 1-1-.7L3 5z"/><path d="M6 5V3.5a2 2 0 0 1 4 0V5"/></svg>
+  {%- when 'account' -%}
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8" cy="6" r="2.6"/><path d="M3 14c.6-2.5 2.7-4 5-4s4.4 1.5 5 4"/></svg>
+  {%- when 'menu' -%}
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 5h12M2 11h12"/></svg>
+  {%- when 'close' -%}
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg>
+  {%- when 'arrow' -%}
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 8h12M9 3l5 5-5 5"/></svg>
+  {%- when 'arrow-down' -%}
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 2v12M3 9l5 5 5-5"/></svg>
+  {%- when 'arrow-up-right' -%}
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12L12 4M5 4h7v7"/></svg>
+  {%- when 'globe' -%}
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M2 8h12M8 2c2.5 3 2.5 9 0 12M8 2c-2.5 3-2.5 9 0 12"/></svg>
+  {%- when 'grid' -%}
+    <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.5" cy="3.5" r="1"/><circle cx="8" cy="3.5" r="1"/><circle cx="12.5" cy="3.5" r="1"/><circle cx="3.5" cy="8" r="1"/><circle cx="8" cy="8" r="1"/><circle cx="12.5" cy="8" r="1"/><circle cx="3.5" cy="12.5" r="1"/><circle cx="8" cy="12.5" r="1"/><circle cx="12.5" cy="12.5" r="1"/></svg>
+  {%- when 'peak' -%}
+    <svg viewBox="0 0 24 24" fill="none" stroke="{{ stroke | default: '#BFEE16' }}" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 19L10 6l4 7 3-3 4 9z"/></svg>
+  {%- when 'box' -%}
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M2 5l6-3 6 3v6l-6 3-6-3V5z"/><path d="M2 5l6 3 6-3M8 8v6"/></svg>
+  {%- when 'plane' -%}
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M2 8l12-5-3 12-3-5-6-2z"/></svg>
+  {%- when 'spark' -%}
+    <svg viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6 0L7.5 4.5 12 6 7.5 7.5 6 12 4.5 7.5 0 6 4.5 4.5z"/></svg>
+{%- endcase -%}
